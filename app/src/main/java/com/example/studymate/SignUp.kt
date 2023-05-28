@@ -15,6 +15,12 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import io.appwrite.Client
+import io.appwrite.services.Account
+import io.appwrite.ID
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class SignUp : AppCompatActivity() {
 
@@ -24,6 +30,7 @@ class SignUp : AppCompatActivity() {
     private lateinit var confirmPassword : EditText
     private lateinit var signUp : Button
     private lateinit var gotoLogin : LinearLayout
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,23 +55,73 @@ class SignUp : AppCompatActivity() {
                 Toast.makeText(this, "Enter the Email address and password", Toast.LENGTH_SHORT).show()
             else if(!isValidEmail(userEmail))
                 Toast.makeText(this, "Enter a valid Email address", Toast.LENGTH_SHORT).show()
-            else if(userPwd.length < 6)
-                Toast.makeText(this, "The password must have a minimum of 6 characters", Toast.LENGTH_SHORT).show()
+            else if(userPwd.length < 8)
+                Toast.makeText(this, "The password must have a minimum of 8 characters", Toast.LENGTH_SHORT).show()
             else if(userPwd != userCPwd)
                 Toast.makeText(this, "The passwords do not match", Toast.LENGTH_SHORT).show()
             else {
-                // Fetch data from database, and compare email address and password
-                if(false){
-                    Toast.makeText(this, "Could not signup. Try again", Toast.LENGTH_SHORT).show()
-                }else{
-                    Toast.makeText(this, "Registered successfully!", Toast.LENGTH_SHORT).show()
-                }
+                registerUser(userEmail, userPwd)
+                checkUser(userEmail, userPwd)
             }
         }
     }
 
     private fun isValidEmail(target: String): Boolean {
         return !TextUtils.isEmpty(target) && Patterns.EMAIL_ADDRESS.matcher(target).matches()
+    }
+
+    private fun registerUser(userEmail:String, userPwd:String) {
+        val client = Client(this)
+            .setEndpoint("https://cloud.appwrite.io/v1")
+            .setProject("64734c27ee025a6ee21c")
+
+        val account = Account(client)
+
+        GlobalScope.launch(Dispatchers.Main) {
+            try {
+                val user = account.create(
+                    userId = ID.unique(),
+                    email = userEmail,
+                    password = userPwd,
+                )
+
+                // Handle successful registration
+                Toast.makeText(this@SignUp, "User registered successfully", Toast.LENGTH_SHORT).show()
+            } catch (e: Exception) {
+                // Handle registration failure
+                Toast.makeText(this@SignUp, "Registration failed: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun checkUser(userEmail: String, userPwd: String) {
+        val client = Client(this)
+            .setEndpoint("https://cloud.appwrite.io/v1")
+            .setProject("64734c27ee025a6ee21c")
+
+        val account = Account(client)
+
+        GlobalScope.launch(Dispatchers.Main) {
+            try {
+                val response = account.createEmailSession(
+                    email = userEmail,
+                    password = userPwd,
+                )
+                // Handle successful login
+                val intent = Intent(this@SignUp, HomePage::class.java)
+                intent.putExtra("sessionId", response.id)
+                intent.putExtra("userId", response.userId)
+                intent.putExtra("email", response.providerUid)
+                startActivity(intent)
+                finish()
+
+                Toast.makeText(this@SignUp, "Login successful", Toast.LENGTH_SHORT).show()
+                // Further flow for the logged-in user
+            } catch (e: Exception) {
+                // Handle login failure
+                Toast.makeText(this@SignUp, "Login failed: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {

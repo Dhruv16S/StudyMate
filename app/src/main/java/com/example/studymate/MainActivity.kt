@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.text.TextUtils
+import android.util.Log
 import android.util.Patterns
 import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
@@ -13,6 +14,12 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import io.appwrite.Client
+import io.appwrite.services.Account
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+
 
 
 class MainActivity : AppCompatActivity() {
@@ -45,11 +52,7 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Enter a valid Email address", Toast.LENGTH_SHORT).show()
             else {
                 // Fetch data from database, and compare email address and password
-                if(false){
-                    Toast.makeText(this, "Could not login. Enter the correct details", Toast.LENGTH_SHORT).show()
-                }else{
-                    Toast.makeText(this, "Logged in successfully!", Toast.LENGTH_SHORT).show()
-                }
+                checkUser(userEmail, userPwd)
             }
         }
         animateTagline()
@@ -77,7 +80,35 @@ class MainActivity : AppCompatActivity() {
         }
         handler.postDelayed(runnable, delayMillis.toLong())
     }
+    private fun checkUser(userEmail: String, userPwd: String) {
+        val client = Client(this)
+            .setEndpoint("https://cloud.appwrite.io/v1")
+            .setProject("64734c27ee025a6ee21c")
 
+        val account = Account(client)
+
+        GlobalScope.launch(Dispatchers.Main) {
+            try {
+                val response = account.createEmailSession(
+                    email = userEmail,
+                    password = userPwd,
+                )
+                // Handle successful login
+                val intent = Intent(this@MainActivity, HomePage::class.java)
+                intent.putExtra("sessionId", response.id)
+                intent.putExtra("userId", response.userId)
+                intent.putExtra("email", response.providerUid)
+                startActivity(intent)
+                finish()
+
+                Toast.makeText(this@MainActivity, "Login successful", Toast.LENGTH_SHORT).show()
+                // Further flow for the logged-in user
+            } catch (e: Exception) {
+                // Handle login failure
+                Toast.makeText(this@MainActivity, "Login failed: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
         if (currentFocus != null) {
             val imm = this!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
