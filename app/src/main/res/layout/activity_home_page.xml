@@ -21,14 +21,14 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/baseline_menu" />
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/menuBar"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_marginTop="110dp"
         android:background="#722978E5"
         android:orientation="vertical"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -42,8 +42,9 @@
             android:orientation="horizontal"
             android:paddingBottom="5dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0">
 
             <ImageView
                 android:layout_width="40dp"
@@ -69,9 +70,11 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:paddingBottom="5dp"
+            android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/homeToggle"
+            app:layout_constraintVertical_bias="0.0">
 
             <ImageView
                 android:layout_width="60dp"
@@ -98,9 +101,11 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:paddingBottom="5dp"
+            android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/notesToggle"
+            app:layout_constraintVertical_bias="0.0">
 
             <ImageView
                 android:layout_width="60dp"
@@ -123,108 +128,56 @@
 
 
         <TextView
+            android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="370dp"
             android:fontFamily="@font/open_sans"
             android:paddingLeft="15dp"
             android:text="Account Info"
             android:textColor="@color/dark_blue_d1"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/questionToggle"
+            app:layout_constraintVertical_bias="0.90999997" />
 
         <TextView
             android:id="@+id/homeUserEmail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
             android:fontFamily="@font/open_sans"
             android:paddingStart="15dp"
             android:text="user@gmail.com"
             android:textColor="@color/black"
-            android:textSize="12sp" />
+            android:textSize="12sp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView"
+            app:layout_constraintVertical_bias="0.0" />
 
         <TextView
             android:id="@+id/homeUserId"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
             android:fontFamily="@font/open_sans"
             android:paddingStart="15dp"
-            android:text="1244444475544545"
+            android:text="3141597826453885214"
             android:textColor="@color/black"
-            android:textSize="12sp" />
-    </LinearLayout>
+            android:textSize="12sp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/homeUserEmail"
+            app:layout_constraintVertical_bias="0.0" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <FrameLayout
-        android:id="@+id/homeFrame"
+        android:id="@+id/frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="100dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <ImageView
-                android:id="@+id/landingImage"
-                android:layout_width="261dp"
-                android:layout_height="277dp"
-                android:src="@drawable/learning_logo"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.893"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.244" />
-
-            <TextView
-                android:id="@+id/welcome"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="172dp"
-                android:fontFamily="@font/open_sans"
-                android:text="Welcome back!"
-                android:textColor="#000000"
-                android:textSize="44sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.343"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/landingImage"
-                app:layout_constraintVertical_bias="0.495" />
-
-            <TextView
-                android:id="@+id/description"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="68dp"
-                android:fontFamily="@font/open_sans"
-                android:text="Get started and automate the process of\nNotemaking, Sharing and Reviewing\nthrough the power of ML, NLP and OCR\ntechnologies."
-                android:textColor="#000000"
-                android:textSize="16sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.327"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/welcome"
-                app:layout_constraintVertical_bias="0.15" />
-
-            <ImageView
-                android:id="@+id/makeNote"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginStart="4dp"
-                app:layout_constraintBottom_toBottomOf="@+id/description"
-                app:layout_constraintStart_toEndOf="@+id/description"
-                app:layout_constraintTop_toTopOf="@+id/description"
-                app:layout_constraintVertical_bias="0.486"
-                app:srcCompat="@drawable/baseline_library_add_24" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </FrameLayout>
-
+        app:layout_constraintTop_toTopOf="parent"></FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

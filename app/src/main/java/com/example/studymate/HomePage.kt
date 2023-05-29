@@ -3,22 +3,25 @@ package com.example.studymate
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
 
 class HomePage : AppCompatActivity() {
 
     private lateinit var menuToggle : ImageView
-    private lateinit var menuBar : LinearLayout
+    private lateinit var menuBar : ConstraintLayout
     private lateinit var homeToggle : LinearLayout
     private lateinit var notesToggle : LinearLayout
     private lateinit var questionToggle : LinearLayout
-    private lateinit var peerToggle : LinearLayout
     private lateinit var homeUserEmail : TextView
     private lateinit var homeUserId : TextView
-    private lateinit var makeNote : ImageView
+    private lateinit var frame : FrameLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,13 +35,41 @@ class HomePage : AppCompatActivity() {
         homeToggle = findViewById(R.id.homeToggle)
         notesToggle = findViewById(R.id.notesToggle)
         questionToggle = findViewById(R.id.questionToggle)
-        peerToggle = findViewById(R.id.peerToggle)
         homeUserEmail = findViewById(R.id.homeUserEmail)
         homeUserId = findViewById(R.id.homeUserId)
-        makeNote = findViewById(R.id.makeNote)
+        frame = findViewById(R.id.frame)
 
         homeUserEmail.text = email
         homeUserId.text = userId
+
+        val fragmentManager : FragmentManager = supportFragmentManager
+        var fragmentTransaction : FragmentTransaction = fragmentManager.beginTransaction()
+        fragmentTransaction.add(R.id.frame, HomeFragment())
+        fragmentTransaction.commit()
+
+        homeToggle.setOnClickListener {
+            menuBar.visibility = View.GONE
+            var fragmentTransaction : FragmentTransaction = fragmentManager.beginTransaction()
+            frame.removeAllViews()
+            fragmentTransaction.add(R.id.frame, HomeFragment())
+            fragmentTransaction.commit()
+        }
+
+        notesToggle.setOnClickListener {
+            menuBar.visibility = View.GONE
+            var fragmentTransaction : FragmentTransaction = fragmentManager.beginTransaction()
+            frame.removeAllViews()
+            fragmentTransaction.add(R.id.frame, NotesFragment())
+            fragmentTransaction.commit()
+        }
+
+        questionToggle.setOnClickListener {
+            menuBar.visibility = View.GONE
+            var fragmentTransaction : FragmentTransaction = fragmentManager.beginTransaction()
+            frame.removeAllViews()
+            fragmentTransaction.add(R.id.frame, QCardsFragment())
+            fragmentTransaction.commit()
+        }
 
         menuToggle.setOnClickListener {
             if (menuBar.visibility == View.VISIBLE) {
@@ -47,10 +78,5 @@ class HomePage : AppCompatActivity() {
                 menuBar.visibility = View.VISIBLE
             }
         }
-
-        makeNote.setOnClickListener {
-            Toast.makeText(this, "Goto Make Notes Page", Toast.LENGTH_SHORT).show()
-        }
-
     }
 }
