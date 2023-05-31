@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- we need two arrays, one for the icons and one for the colors of the icons-->
+    <!-- icons array-->
+    <dimen name="design_fab_image_size" tools:override="true">1dp</dimen>
+    <array name="icons">
+        <item>@drawable/baseline_home</item>
+        <item>@drawable/baseline_question_answer</item>
+        <item>@drawable/baseline_text_snippet</item>
+        <item>@drawable/baseline_account</item>
+        <item>@drawable/baseline_question_answer</item>
+        <item>@drawable/baseline_text_snippet</item>
+    </array>
+    <!-- icons colors-->
+    <array name="colors">
+        <item>@android:color/holo_red_light</item>
+        <item>@android:color/holo_purple</item>
+        <item>@android:color/holo_orange_light</item>
+        <item>@android:color/holo_blue_dark</item>
+        <item>@color/mid_blue</item>
+        <item>@color/mid_blue</item>
+    </array>
+</resources>

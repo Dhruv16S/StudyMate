@@ -1,27 +1,21 @@
 package com.example.studymate
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
+
 import android.widget.FrameLayout
-import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
-import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
+import com.ramotion.circlemenu.CircleMenuView
+
 
 class HomePage : AppCompatActivity() {
 
-    private lateinit var menuToggle : ImageView
-    private lateinit var menuBar : ConstraintLayout
-    private lateinit var homeToggle : LinearLayout
-    private lateinit var notesToggle : LinearLayout
-    private lateinit var questionToggle : LinearLayout
     private lateinit var homeUserEmail : TextView
     private lateinit var homeUserId : TextView
     private lateinit var frame : FrameLayout
+    private lateinit var menu : CircleMenuView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,52 +24,62 @@ class HomePage : AppCompatActivity() {
         val userId = intent.getStringExtra("userId")
         val email = intent.getStringExtra("email")
 
-        menuToggle = findViewById(R.id.menuToggle)
-        menuBar = findViewById(R.id.menuBar)
-        homeToggle = findViewById(R.id.homeToggle)
-        notesToggle = findViewById(R.id.notesToggle)
-        questionToggle = findViewById(R.id.questionToggle)
-        homeUserEmail = findViewById(R.id.homeUserEmail)
-        homeUserId = findViewById(R.id.homeUserId)
         frame = findViewById(R.id.frame)
+        menu = findViewById(R.id.circle_menu)
 
-        homeUserEmail.text = email
-        homeUserId.text = userId
+//        homeUserEmail.text = email
+//        homeUserId.text = userId
 
         val fragmentManager : FragmentManager = supportFragmentManager
         var fragmentTransaction : FragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.add(R.id.frame, HomeFragment())
         fragmentTransaction.commit()
 
-        homeToggle.setOnClickListener {
-            menuBar.visibility = View.GONE
-            var fragmentTransaction : FragmentTransaction = fragmentManager.beginTransaction()
-            frame.removeAllViews()
-            fragmentTransaction.add(R.id.frame, HomeFragment())
-            fragmentTransaction.commit()
-        }
+        menu.eventListener = object : CircleMenuView.EventListener() {
+            override fun onButtonClickAnimationStart(view: CircleMenuView, index: Int) {
+                when (index) {
+                    0 -> {
+                        var fragmentTransaction : FragmentTransaction = fragmentManager.beginTransaction()
+                        frame.removeAllViews()
+                        fragmentTransaction.add(R.id.frame, HomeFragment())
+                        fragmentTransaction.commit()
+                    }
+                    1 -> {
+                        var fragmentTransaction : FragmentTransaction = fragmentManager.beginTransaction()
+                        frame.removeAllViews()
+                        fragmentTransaction.add(R.id.frame, NotesFragment())
+                        fragmentTransaction.commit()
+                    }
+                    else -> {
+                        var fragmentTransaction : FragmentTransaction = fragmentManager.beginTransaction()
+                        frame.removeAllViews()
+                        fragmentTransaction.add(R.id.frame, QCardsFragment())
+                        fragmentTransaction.commit()
+                    }
+                }
+            }
 
-        notesToggle.setOnClickListener {
-            menuBar.visibility = View.GONE
-            var fragmentTransaction : FragmentTransaction = fragmentManager.beginTransaction()
-            frame.removeAllViews()
-            fragmentTransaction.add(R.id.frame, NotesFragment())
-            fragmentTransaction.commit()
-        }
-
-        questionToggle.setOnClickListener {
-            menuBar.visibility = View.GONE
-            var fragmentTransaction : FragmentTransaction = fragmentManager.beginTransaction()
-            frame.removeAllViews()
-            fragmentTransaction.add(R.id.frame, QCardsFragment())
-            fragmentTransaction.commit()
-        }
-
-        menuToggle.setOnClickListener {
-            if (menuBar.visibility == View.VISIBLE) {
-                menuBar.visibility = View.GONE
-            } else {
-                menuBar.visibility = View.VISIBLE
+            override fun onButtonLongClickAnimationStart(view: CircleMenuView, buttonIndex: Int) {
+                when (buttonIndex) {
+                    0 -> {
+                        var fragmentTransaction : FragmentTransaction = fragmentManager.beginTransaction()
+                        frame.removeAllViews()
+                        fragmentTransaction.add(R.id.frame, HomeFragment())
+                        fragmentTransaction.commit()
+                    }
+                    1 -> {
+                        var fragmentTransaction : FragmentTransaction = fragmentManager.beginTransaction()
+                        frame.removeAllViews()
+                        fragmentTransaction.add(R.id.frame, NotesFragment())
+                        fragmentTransaction.commit()
+                    }
+                    else -> {
+                        var fragmentTransaction : FragmentTransaction = fragmentManager.beginTransaction()
+                        frame.removeAllViews()
+                        fragmentTransaction.add(R.id.frame, QCardsFragment())
+                        fragmentTransaction.commit()
+                    }
+                }
             }
         }
     }

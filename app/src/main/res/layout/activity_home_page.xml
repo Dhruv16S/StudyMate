@@ -8,176 +8,31 @@
     tools:context=".HomePage"
     android:background="@drawable/home_page">
 
-
-
-    <ImageView
-        android:id="@+id/menuToggle"
-        android:layout_width="65dp"
-        android:layout_height="65dp"
-        android:layout_marginTop="36dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.037"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/baseline_menu" />
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/menuBar"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_marginTop="110dp"
-        android:background="#722978E5"
-        android:orientation="vertical"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <com.ramotion.circlemenu.CircleMenuView
+        android:id="@+id/circle_menu"
+        android:layout_width="190dp"
+        android:layout_height="200dp"
+        android:layout_marginStart="-60dp"
+        app:button_colors="@array/colors"
+        app:button_icons="@array/icons"
+        app:distance="65dp"
+        app:layout_constraintBottom_toBottomOf="@+id/frame"
+        app:layout_constraintCircleAngle="@integer/material_motion_duration_short_1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/menuToggle">
-
-        <LinearLayout
-            android:id="@+id/homeToggle"
-            android:layout_width="150dp"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingBottom="5dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0">
-
-            <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_weight="1"
-                app:srcCompat="@drawable/baseline_home" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:fontFamily="@font/open_sans"
-                android:paddingTop="5dp"
-                android:text="Home"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                android:textStyle="italic" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/notesToggle"
-            android:layout_width="150dp"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingBottom="5dp"
-            android:visibility="visible"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/homeToggle"
-            app:layout_constraintVertical_bias="0.0">
-
-            <ImageView
-                android:layout_width="60dp"
-                android:layout_height="40dp"
-                android:layout_marginTop="15dp"
-                android:layout_weight="1"
-                app:srcCompat="@drawable/baseline_text_snippet" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:fontFamily="@font/open_sans"
-                android:paddingTop="5dp"
-                android:text="Notes\nCreated"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                android:textStyle="italic" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/questionToggle"
-            android:layout_width="150dp"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingBottom="5dp"
-            android:visibility="visible"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/notesToggle"
-            app:layout_constraintVertical_bias="0.0">
-
-            <ImageView
-                android:layout_width="60dp"
-                android:layout_height="40dp"
-                android:layout_marginTop="15dp"
-                android:layout_weight="1"
-                app:srcCompat="@drawable/baseline_question_answer" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:fontFamily="@font/open_sans"
-                android:paddingTop="5dp"
-                android:text="Prompt\nCards"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                android:textStyle="italic" />
-        </LinearLayout>
-
-
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/open_sans"
-            android:paddingLeft="15dp"
-            android:text="Account Info"
-            android:textColor="@color/dark_blue_d1"
-            android:textSize="20sp"
-            android:visibility="visible"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/questionToggle"
-            app:layout_constraintVertical_bias="0.90999997" />
-
-        <TextView
-            android:id="@+id/homeUserEmail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/open_sans"
-            android:paddingStart="15dp"
-            android:text="user@gmail.com"
-            android:textColor="@color/black"
-            android:textSize="12sp"
-            android:visibility="visible"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView"
-            app:layout_constraintVertical_bias="0.0" />
-
-        <TextView
-            android:id="@+id/homeUserId"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/open_sans"
-            android:paddingStart="15dp"
-            android:text="3141597826453885214"
-            android:textColor="@color/black"
-            android:textSize="12sp"
-            android:visibility="visible"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/homeUserEmail"
-            app:layout_constraintVertical_bias="0.0" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 
     <FrameLayout
         android:id="@+id/frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="100dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"></FrameLayout>
+        app:layout_constraintTop_toTopOf="parent">
+
+    </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
