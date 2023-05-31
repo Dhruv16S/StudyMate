@@ -38,7 +38,7 @@
             android:inputType="textEmailAddress"
             android:fontFamily="@font/open_sans"
             android:textColor="@color/black"
-            android:textSize="14dp"/>
+            android:textSize="14sp"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -61,7 +61,7 @@
             android:inputType="textPassword"
             android:fontFamily="@font/open_sans"
             android:textColor="@color/black"
-            android:textSize="14dp"/>
+            android:textSize="14sp"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -98,13 +98,27 @@
         android:background="@drawable/button_template"
         android:fontFamily="@font/open_sans"
         android:text="Login"
+        android:textColor="@color/white"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.173"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutPassword"
-        android:textColor="@color/white" />
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutPassword" />
+
+    <CheckBox
+        android:id="@+id/loginRemember"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="91dp"
+        android:fontFamily="@font/open_sans"
+        android:text="Remember Me"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.02"
+        app:layout_constraintStart_toEndOf="@+id/login"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutPassword" />
     <!-- Login Button -->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

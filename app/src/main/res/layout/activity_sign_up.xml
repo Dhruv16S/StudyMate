@@ -105,13 +105,13 @@
         android:background="@drawable/button_template"
         android:fontFamily="@font/open_sans"
         android:text="SignUp"
+        android:textColor="@color/white"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.173"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/signUptextInputLayoutConfirmPassword"
-        android:textColor="@color/white"/>
+        app:layout_constraintTop_toBottomOf="@+id/signUptextInputLayoutConfirmPassword" />
 
     <LinearLayout
         android:id="@+id/gotoLogin"
@@ -148,6 +148,20 @@
             app:layout_constraintStart_toStartOf="parent" />
 
     </LinearLayout>
+
+    <CheckBox
+        android:id="@+id/signUpRemember"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/open_sans"
+        android:text="Remember Me"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.612"
+        app:layout_constraintStart_toEndOf="@+id/signUp"
+        app:layout_constraintTop_toBottomOf="@+id/signUptextInputLayoutConfirmPassword"
+        app:layout_constraintVertical_bias="0.2" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,14 +2,15 @@ package com.example.studymate
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
 import android.text.TextUtils
-import android.util.Log
 import android.util.Patterns
 import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
@@ -29,6 +30,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var emailAddress : EditText
     private lateinit var password : EditText
     private lateinit var login : Button
+    private lateinit var loginCheckBox : CheckBox
+    private lateinit var preferences: SharedPreferences
+    var remember : Boolean = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -37,6 +41,14 @@ class MainActivity : AppCompatActivity() {
         emailAddress = findViewById(R.id.editTextUsername)
         password = findViewById(R.id.editTextPassword)
         login = findViewById(R.id.login)
+        loginCheckBox = findViewById(R.id.loginRemember)
+
+        preferences = getSharedPreferences("SHARED_PREF", Context.MODE_PRIVATE)
+        remember = preferences.getBoolean("CHECKBOX", false)
+
+        if(remember){
+            checkUser(preferences.getString("Email", " "), preferences.getString("Pwd", " "))
+        }
 
         signUp.setOnClickListener {
             startActivity(Intent(this@MainActivity, SignUp::class.java))
@@ -51,7 +63,13 @@ class MainActivity : AppCompatActivity() {
             else if(!isValidEmail(userEmail))
                 Toast.makeText(this, "Enter a valid Email address", Toast.LENGTH_SHORT).show()
             else {
-                // Fetch data from database, and compare email address and password
+                if(loginCheckBox.isChecked){
+                    val editor : SharedPreferences.Editor = preferences.edit()
+                    editor.putString("Email", userEmail)
+                    editor.putString("Pwd", userPwd)
+                    editor.putBoolean("CHECKBOX", true)
+                    editor.apply()
+                }
                 checkUser(userEmail, userPwd)
             }
         }
@@ -80,7 +98,7 @@ class MainActivity : AppCompatActivity() {
         }
         handler.postDelayed(runnable, delayMillis.toLong())
     }
-    private fun checkUser(userEmail: String, userPwd: String) {
+    private fun checkUser(userEmail: String?, userPwd: String?) {
         val client = Client(this)
             .setEndpoint("https://cloud.appwrite.io/v1")
             .setProject("64734c27ee025a6ee21c")
@@ -90,8 +108,8 @@ class MainActivity : AppCompatActivity() {
         GlobalScope.launch(Dispatchers.Main) {
             try {
                 val response = account.createEmailSession(
-                    email = userEmail,
-                    password = userPwd,
+                    email = userEmail.toString(),
+                    password = userPwd.toString(),
                 )
                 // Handle successful login
                 val intent = Intent(this@MainActivity, HomePage::class.java)

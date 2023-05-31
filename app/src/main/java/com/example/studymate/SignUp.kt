@@ -2,6 +2,7 @@ package com.example.studymate
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
@@ -11,6 +12,7 @@ import android.util.Patterns
 import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -30,6 +32,9 @@ class SignUp : AppCompatActivity() {
     private lateinit var confirmPassword : EditText
     private lateinit var signUp : Button
     private lateinit var gotoLogin : LinearLayout
+    private lateinit var signUpCheckBox : CheckBox
+    private lateinit var preferences: SharedPreferences
+    var remember : Boolean = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,6 +46,9 @@ class SignUp : AppCompatActivity() {
         confirmPassword = findViewById(R.id.signUpeditTextConfirmPassword)
         gotoLogin = findViewById(R.id.gotoLogin)
         signUp = findViewById(R.id.signUp)
+        signUpCheckBox = findViewById(R.id.signUpRemember)
+
+        preferences = getSharedPreferences("SHARED_PREF", Context.MODE_PRIVATE)
 
         gotoLogin.setOnClickListener {
             startActivity(Intent(this@SignUp, MainActivity::class.java))
@@ -60,8 +68,14 @@ class SignUp : AppCompatActivity() {
             else if(userPwd != userCPwd)
                 Toast.makeText(this, "The passwords do not match", Toast.LENGTH_SHORT).show()
             else {
+                if(signUpCheckBox.isChecked){
+                    val editor : SharedPreferences.Editor = preferences.edit()
+                    editor.putString("Email", userEmail)
+                    editor.putString("Pwd", userPwd)
+                    editor.putBoolean("CHECKBOX", true)
+                    editor.apply()
+                }
                 registerUser(userEmail, userPwd)
-                checkUser(userEmail, userPwd)
             }
         }
     }
@@ -84,9 +98,9 @@ class SignUp : AppCompatActivity() {
                     email = userEmail,
                     password = userPwd,
                 )
-
                 // Handle successful registration
                 Toast.makeText(this@SignUp, "User registered successfully", Toast.LENGTH_SHORT).show()
+                checkUser(userEmail, userPwd)
             } catch (e: Exception) {
                 // Handle registration failure
                 Toast.makeText(this@SignUp, "Registration failed: ${e.message}", Toast.LENGTH_SHORT).show()
@@ -114,12 +128,9 @@ class SignUp : AppCompatActivity() {
                 intent.putExtra("email", response.providerUid)
                 startActivity(intent)
                 finish()
-
-                Toast.makeText(this@SignUp, "Login successful", Toast.LENGTH_SHORT).show()
                 // Further flow for the logged-in user
             } catch (e: Exception) {
                 // Handle login failure
-                Toast.makeText(this@SignUp, "Login failed: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
     }
