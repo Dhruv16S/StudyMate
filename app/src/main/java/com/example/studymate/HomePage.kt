@@ -27,9 +27,6 @@ class HomePage : AppCompatActivity() {
         frame = findViewById(R.id.frame)
         menu = findViewById(R.id.circle_menu)
 
-//        homeUserEmail.text = email
-//        homeUserId.text = userId
-
         val fragmentManager : FragmentManager = supportFragmentManager
         var fragmentTransaction : FragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.add(R.id.frame, HomeFragment())
@@ -50,10 +47,17 @@ class HomePage : AppCompatActivity() {
                         fragmentTransaction.add(R.id.frame, NotesFragment())
                         fragmentTransaction.commit()
                     }
-                    else -> {
+                    2 -> {
                         var fragmentTransaction : FragmentTransaction = fragmentManager.beginTransaction()
                         frame.removeAllViews()
                         fragmentTransaction.add(R.id.frame, QCardsFragment())
+                        fragmentTransaction.commit()
+                    }
+
+                    3 -> {
+                        var fragmentTransaction : FragmentTransaction = fragmentManager.beginTransaction()
+                        frame.removeAllViews()
+                        fragmentTransaction.add(R.id.frame, AccountFragment())
                         fragmentTransaction.commit()
                     }
                 }
@@ -73,10 +77,17 @@ class HomePage : AppCompatActivity() {
                         fragmentTransaction.add(R.id.frame, NotesFragment())
                         fragmentTransaction.commit()
                     }
-                    else -> {
+                    2 -> {
                         var fragmentTransaction : FragmentTransaction = fragmentManager.beginTransaction()
                         frame.removeAllViews()
                         fragmentTransaction.add(R.id.frame, QCardsFragment())
+                        fragmentTransaction.commit()
+                    }
+
+                    3 -> {
+                        var fragmentTransaction : FragmentTransaction = fragmentManager.beginTransaction()
+                        frame.removeAllViews()
+                        fragmentTransaction.add(R.id.frame, AccountFragment())
                         fragmentTransaction.commit()
                     }
                 }
