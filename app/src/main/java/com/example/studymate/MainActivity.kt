@@ -113,9 +113,10 @@ class MainActivity : AppCompatActivity() {
                 )
                 // Handle successful login
                 val intent = Intent(this@MainActivity, HomePage::class.java)
-                intent.putExtra("sessionId", response.id)
-                intent.putExtra("userId", response.userId)
-                intent.putExtra("email", response.providerUid)
+                val editor : SharedPreferences.Editor = preferences.edit()
+                editor.putString("sessionId", response.id)
+                editor.putString("userId", response.userId)
+                editor.apply()
                 startActivity(intent)
                 finish()
 

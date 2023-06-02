@@ -12,17 +12,12 @@ import com.ramotion.circlemenu.CircleMenuView
 
 class HomePage : AppCompatActivity() {
 
-    private lateinit var homeUserEmail : TextView
-    private lateinit var homeUserId : TextView
     private lateinit var frame : FrameLayout
     private lateinit var menu : CircleMenuView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home_page)
-        val sessionId = intent.getStringExtra("sessionId")
-        val userId = intent.getStringExtra("userId")
-        val email = intent.getStringExtra("email")
 
         frame = findViewById(R.id.frame)
         menu = findViewById(R.id.circle_menu)

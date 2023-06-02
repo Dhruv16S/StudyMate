@@ -34,8 +34,6 @@ class SignUp : AppCompatActivity() {
     private lateinit var gotoLogin : LinearLayout
     private lateinit var signUpCheckBox : CheckBox
     private lateinit var preferences: SharedPreferences
-    var remember : Boolean = false
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,13 +66,6 @@ class SignUp : AppCompatActivity() {
             else if(userPwd != userCPwd)
                 Toast.makeText(this, "The passwords do not match", Toast.LENGTH_SHORT).show()
             else {
-                if(signUpCheckBox.isChecked){
-                    val editor : SharedPreferences.Editor = preferences.edit()
-                    editor.putString("Email", userEmail)
-                    editor.putString("Pwd", userPwd)
-                    editor.putBoolean("CHECKBOX", true)
-                    editor.apply()
-                }
                 registerUser(userEmail, userPwd)
             }
         }
@@ -100,6 +91,13 @@ class SignUp : AppCompatActivity() {
                 )
                 // Handle successful registration
                 Toast.makeText(this@SignUp, "User registered successfully", Toast.LENGTH_SHORT).show()
+                if(signUpCheckBox.isChecked){
+                    val editor : SharedPreferences.Editor = preferences.edit()
+                    editor.putString("Email", userEmail)
+                    editor.putString("Pwd", userPwd)
+                    editor.putBoolean("CHECKBOX", true)
+                    editor.apply()
+                }
                 checkUser(userEmail, userPwd)
             } catch (e: Exception) {
                 // Handle registration failure
