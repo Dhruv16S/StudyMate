@@ -28,6 +28,8 @@
             android:fontFamily="@font/open_sans"
             android:hint="Note Name"
             android:inputType="text"
+            android:minHeight="48dp"
+            android:textAllCaps="true"
             android:textColor="@color/black"
             android:textSize="18sp"
             android:textStyle="bold"

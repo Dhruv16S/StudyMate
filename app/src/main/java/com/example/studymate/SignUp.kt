@@ -18,6 +18,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import io.appwrite.Client
+import io.appwrite.services.Databases
 import io.appwrite.services.Account
 import io.appwrite.ID
 import kotlinx.coroutines.Dispatchers
@@ -66,7 +67,17 @@ class SignUp : AppCompatActivity() {
             else if(userPwd != userCPwd)
                 Toast.makeText(this, "The passwords do not match", Toast.LENGTH_SHORT).show()
             else {
-                registerUser(userEmail, userPwd)
+                if(signUpCheckBox.isChecked){
+                    registerUser(userEmail, userPwd)
+                    intent = Intent(this@SignUp, HomePage::class.java)
+                    val editor : SharedPreferences.Editor = preferences.edit()
+                    editor.putString("Email", userEmail)
+                    editor.putString("Pwd", userPwd)
+                    editor.putBoolean("CHECKBOX", true)
+                    editor.apply()
+                    startActivity(intent)
+                    finish()
+                }
             }
         }
     }
@@ -91,13 +102,6 @@ class SignUp : AppCompatActivity() {
                 )
                 // Handle successful registration
                 Toast.makeText(this@SignUp, "User registered successfully", Toast.LENGTH_SHORT).show()
-                if(signUpCheckBox.isChecked){
-                    val editor : SharedPreferences.Editor = preferences.edit()
-                    editor.putString("Email", userEmail)
-                    editor.putString("Pwd", userPwd)
-                    editor.putBoolean("CHECKBOX", true)
-                    editor.apply()
-                }
                 checkUser(userEmail, userPwd)
             } catch (e: Exception) {
                 // Handle registration failure
@@ -120,12 +124,10 @@ class SignUp : AppCompatActivity() {
                     password = userPwd,
                 )
                 // Handle successful login
-                val intent = Intent(this@SignUp, HomePage::class.java)
-                intent.putExtra("sessionId", response.id)
-                intent.putExtra("userId", response.userId)
-                intent.putExtra("email", response.providerUid)
-                startActivity(intent)
-                finish()
+                val editor : SharedPreferences.Editor = preferences.edit()
+                editor.putString("sessionId", response.id)
+                editor.putString("userId", response.userId)
+                editor.apply()
                 // Further flow for the logged-in user
             } catch (e: Exception) {
                 // Handle login failure

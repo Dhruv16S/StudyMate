@@ -1,11 +1,8 @@
 package com.example.studymate
 
-import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
 import android.content.res.Resources
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
@@ -20,11 +17,15 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
-import androidx.core.view.setPadding
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import io.appwrite.Client
+import io.appwrite.services.Databases
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class CreateNotesFragment : Fragment() {
 
@@ -36,8 +37,11 @@ class CreateNotesFragment : Fragment() {
     private lateinit var displayNotes : LinearLayout
     private lateinit var noteName : EditText
     private lateinit var preferences: SharedPreferences
+    private lateinit var userId : String
+    private lateinit var sessionId : String
+    private var docCount : Int = 0
 
-    private var sentencesList = mutableListOf<List<String>>()
+    private var sentencesList = mutableListOf<String>()
     private var i : Int = 1
 
     override fun onCreateView(
@@ -56,9 +60,8 @@ class CreateNotesFragment : Fragment() {
         noteName = v.findViewById(R.id.noteName)
         preferences = requireActivity().getSharedPreferences("SHARED_PREF", Context.MODE_PRIVATE)
 
-        val sessionId = preferences.getString("sessionId", " ")
-        val userId = preferences.getString("userId", " ")
-        Log.d("context", "Session is $sessionId. User is $userId")
+        sessionId = preferences.getString("sessionId", " ").toString()
+        userId = preferences.getString("userId", " ").toString()
 
         createInstructionCard()
 
@@ -69,6 +72,7 @@ class CreateNotesFragment : Fragment() {
             editText.layoutParams = layoutParams
             editText.typeface = ResourcesCompat.getFont(requireContext(), R.font.open_sans)
             editText.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
+            editText.setHintTextColor(ContextCompat.getColor(requireContext(), R.color.black))
             editText.setBackgroundResource(0) // Removes the line associated with the EditText
             editText.setPadding(20.0.dpToPx(), 10.0.dpToPx(), 20.0.dpToPx(), 10.0.dpToPx())
             editText.setTextCursorDrawable(R.drawable.black_cursor)
@@ -82,13 +86,45 @@ class CreateNotesFragment : Fragment() {
         }
 
         saveNotes.setOnClickListener {
-            if(noteName.text.isEmpty()){
+            docCount += 1
+            sentencesList = mutableListOf<String>()
+            if (noteName.text.isEmpty()) {
                 Toast.makeText(context, "Enter a Note Name to proceed", Toast.LENGTH_SHORT).show()
-            }else{
+            } else {
                 collectTextFromEditTexts()
                 Log.d("list", sentencesList.toString())
+                CoroutineScope(Dispatchers.Main).launch {
+
+                    val client = Client(requireContext())
+                        .setEndpoint("https://cloud.appwrite.io/v1")
+                        .setProject("64734c27ee025a6ee21c")
+
+                    val databases = Databases(client)
+
+                    // Create a collection first
+                    // Could not do this
+                    Log.d("userId", userId)
+                    Log.d("userId", sessionId)
+                    try {
+                        val response = databases.createDocument(
+                            databaseId = "6479d563804822fc79bb",
+                            collectionId = "6479f9af8834a056c20d",
+                            documentId = sessionId + docCount.toString(),
+                            data = mapOf(
+                                    "session-id" to sessionId,
+                                    "user-id" to userId,
+                                    "note-name" to noteName.text.toString(),
+                                    "note-content" to sentencesList
+                                )
+                        )
+                        Toast.makeText(context, "Note Created!", Toast.LENGTH_SHORT).show()
+                    } catch (e: Exception) {
+                        Log.e("Appwrite", "Error: " + e.message)
+                    }
+                }
             }
         }
+
 
         deleteNote.setOnClickListener {
             val focusedView = displayNotes.findFocus()
@@ -127,13 +163,12 @@ class CreateNotesFragment : Fragment() {
         return (this * scale + 0.5f).toInt()
     }
 
-    private fun collectTextFromEditTexts(): List<List<String>> {
+    private fun collectTextFromEditTexts(): List<String> {
         for (i in 0 until displayNotes.childCount) {
             val view = displayNotes.getChildAt(i)
             if (view is EditText) {
                 val text = view.text.toString().trim()
-                val sentences = text.split("\\.\\s*".toRegex())
-                sentencesList.add(sentences)
+                sentencesList.add(text)
             }
         }
 
