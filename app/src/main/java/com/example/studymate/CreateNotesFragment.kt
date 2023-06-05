@@ -3,6 +3,7 @@ package com.example.studymate
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.Resources
+import android.graphics.Typeface
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
@@ -21,6 +22,9 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.cardview.widget.CardView
+import androidx.core.view.marginBottom
+import androidx.core.view.marginStart
 import io.appwrite.Client
 import io.appwrite.services.Databases
 import kotlinx.coroutines.CoroutineScope
@@ -31,11 +35,12 @@ class CreateNotesFragment : Fragment() {
 
     private lateinit var addText : Button
     private lateinit var addFile : Button
+    private lateinit var addOcr : Button
     private lateinit var saveNotes : Button
-    private lateinit var deleteNote : Button
     private lateinit var scroll : ScrollView
     private lateinit var displayNotes : LinearLayout
     private lateinit var noteName : EditText
+    private lateinit var noteContent : EditText
     private lateinit var preferences: SharedPreferences
     private lateinit var userId : String
     private lateinit var sessionId : String
@@ -53,45 +58,96 @@ class CreateNotesFragment : Fragment() {
 
         addText = v.findViewById(R.id.addText)
         addFile = v.findViewById(R.id.addFile)
+        addOcr = v.findViewById(R.id.addOcr)
         saveNotes = v.findViewById(R.id.saveNotes)
-        deleteNote = v.findViewById(R.id.deleteNote)
         scroll = v.findViewById(R.id.scrollView)
         displayNotes = v.findViewById(R.id.displayNotes)
         noteName = v.findViewById(R.id.noteName)
+        noteContent = v.findViewById(R.id.noteContent)
         preferences = requireActivity().getSharedPreferences("SHARED_PREF", Context.MODE_PRIVATE)
-
         sessionId = preferences.getString("sessionId", " ").toString()
         userId = preferences.getString("userId", " ").toString()
 
-        createInstructionCard()
-
         addText.setOnClickListener {
+            val toBeAdded = noteContent.text.toString()
+
+            if(toBeAdded.isEmpty()){
+                Toast.makeText(context, "Enter some text: ", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            // Create a new CardView
+            sentencesList.add(toBeAdded)
+            val cardView = CardView(requireContext())
+
+            // Set CardView layout parameters
+            val cardLayoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+            cardLayoutParams.setMargins(10.0.dpToPx(), 5.0.dpToPx(), 10.0.dpToPx(), 5.0.dpToPx())
+            cardView.layoutParams = cardLayoutParams
+            cardView.cardElevation = 25.0.dpToPx().toFloat()
+            cardView.setBackgroundResource(R.drawable.note_card_template)
+
+            // Create a LinearLayout to hold the TextView and EditText
+            val linearLayout = LinearLayout(requireContext())
+            linearLayout.orientation = LinearLayout.VERTICAL
+            linearLayout.setPadding(16.0.dpToPx(), 16.0.dpToPx(), 16.0.dpToPx(), 16.0.dpToPx())
+
+            // Create the TextView
+            val textView = TextView(requireContext())
+            textView.text = "Note ${i}:"
+            textView.typeface = ResourcesCompat.getFont(requireContext(), R.font.open_sans)
+            textView.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
+            textView.textSize = 16.0f
+            textView.setTypeface(null, Typeface.BOLD)
+
+            // Add the TextView to the LinearLayout
+            linearLayout.addView(textView)
+
+            // Create the EditText
             val editText = EditText(requireContext())
-            val layoutParams = LinearLayout.LayoutParams(370.0.dpToPx(), LinearLayout.LayoutParams.WRAP_CONTENT)
-            layoutParams.gravity = Gravity.CENTER // Center aligns the EditText
-            editText.layoutParams = layoutParams
+            val editTextLayoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+
+            editText.layoutParams = editTextLayoutParams
             editText.typeface = ResourcesCompat.getFont(requireContext(), R.font.open_sans)
-            editText.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
-            editText.setHintTextColor(ContextCompat.getColor(requireContext(), R.color.black))
+            editText.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+            editText.setHintTextColor(ContextCompat.getColor(requireContext(), R.color.white))
             editText.setBackgroundResource(0) // Removes the line associated with the EditText
-            editText.setPadding(20.0.dpToPx(), 10.0.dpToPx(), 20.0.dpToPx(), 10.0.dpToPx())
             editText.setTextCursorDrawable(R.drawable.black_cursor)
-            editText.hint = "Note #${i}"
-            displayNotes.addView(editText)
+            editText.setText(toBeAdded)
+            editText.tag = "noteEditText"
+            editText.textSize = 17.0f
+            editText.setTypeface(null, Typeface.BOLD)
+
+            // Add the EditText to the LinearLayout
+            linearLayout.addView(editText)
+
+            // Add the LinearLayout to the CardView
+            cardView.addView(linearLayout)
+
+            // Add the CardView to the parent LinearLayout (displayNotes)
+            displayNotes.addView(cardView)
+
             i += 1
+            noteContent.setText("")
         }
+
 
         addFile.setOnClickListener {
 
         }
 
+        addOcr.setOnClickListener {
+
+        }
+
         saveNotes.setOnClickListener {
             docCount += 1
-            sentencesList = mutableListOf<String>()
             if (noteName.text.isEmpty()) {
                 Toast.makeText(context, "Enter a Note Name to proceed", Toast.LENGTH_SHORT).show()
             } else {
-                collectTextFromEditTexts()
+
                 Log.d("list", sentencesList.toString())
                 CoroutineScope(Dispatchers.Main).launch {
 
@@ -118,6 +174,10 @@ class CreateNotesFragment : Fragment() {
                                 )
                         )
                         Toast.makeText(context, "Note Created!", Toast.LENGTH_SHORT).show()
+                        sentencesList = mutableListOf<String>()
+                        i = 0
+                        noteName.setText("")
+                        displayNotes.removeAllViews()
                     } catch (e: Exception) {
                         Log.e("Appwrite", "Error: " + e.message)
                     }
@@ -125,13 +185,6 @@ class CreateNotesFragment : Fragment() {
             }
         }
 
-
-        deleteNote.setOnClickListener {
-            val focusedView = displayNotes.findFocus()
-            if (focusedView is EditText || focusedView is ImageView) {
-                displayNotes.removeView(focusedView)
-            }
-        }
 
         v.setOnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_DOWN) {
@@ -144,34 +197,8 @@ class CreateNotesFragment : Fragment() {
         return v
     }
 
-    private fun createInstructionCard() {
-        val textView = TextView(requireContext())
-        val layoutParams = LinearLayout.LayoutParams(370.0.dpToPx(), LinearLayout.LayoutParams.WRAP_CONTENT)
-        layoutParams.gravity = Gravity.CENTER // Center aligns the textView
-        textView.layoutParams = layoutParams
-        textView.typeface = ResourcesCompat.getFont(requireContext(), R.font.open_sans)
-        textView.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
-        textView.setBackgroundResource(0) // Removes the line associated with the textView
-        textView.setPadding(20.0.dpToPx(), 10.0.dpToPx(), 20.0.dpToPx(), 10.0.dpToPx())
-        textView.setTextCursorDrawable(R.drawable.black_cursor)
-        textView.text = "To get started simply click on the button of your choice below. On clicking Save, your note will be saved. Clicking Delete, will delete the focused text."
-        displayNotes.addView(textView)
-    }
-
     private fun Double.dpToPx(): Int {
         val scale = Resources.getSystem().displayMetrics.density
         return (this * scale + 0.5f).toInt()
-    }
-
-    private fun collectTextFromEditTexts(): List<String> {
-        for (i in 0 until displayNotes.childCount) {
-            val view = displayNotes.getChildAt(i)
-            if (view is EditText) {
-                val text = view.text.toString().trim()
-                sentencesList.add(text)
-            }
-        }
-
-        return sentencesList
     }
 }

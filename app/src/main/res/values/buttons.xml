@@ -17,7 +17,7 @@
         <item>@android:color/holo_purple</item>
         <item>@android:color/holo_orange_light</item>
         <item>@android:color/holo_blue_dark</item>
-        <item>@color/mid_blue</item>
-        <item>@color/mid_blue</item>
+        <item>@color/dark_white</item>
+        <item>@color/dark_white</item>
     </array>
 </resources>

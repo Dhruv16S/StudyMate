@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.ramotion.circlemenu.CircleMenuView
@@ -18,6 +19,8 @@ class HomePage : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home_page)
+
+        window.statusBarColor = ContextCompat.getColor(this, R.color.mid_blue)
 
         frame = findViewById(R.id.frame)
         menu = findViewById(R.id.circle_menu)

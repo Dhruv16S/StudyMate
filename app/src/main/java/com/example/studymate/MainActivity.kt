@@ -15,6 +15,7 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import io.appwrite.Client
 import io.appwrite.services.Account
 import kotlinx.coroutines.Dispatchers
@@ -35,6 +36,8 @@ class MainActivity : AppCompatActivity() {
     var remember : Boolean = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        window.statusBarColor = ContextCompat.getColor(this, R.color.mid_blue)
         setContentView(R.layout.activity_main)
         textTagline = findViewById(R.id.textTagline)
         signUp = findViewById(R.id.signUpHere)

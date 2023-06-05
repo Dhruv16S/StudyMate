@@ -96,7 +96,7 @@
         app:srcCompat="@drawable/studymate_logos_white"/>
 
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/signUp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -107,6 +107,7 @@
         android:text="SignUp"
         android:textColor="@color/white"
         android:textStyle="bold"
+        android:backgroundTint="@color/mid_blue"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.173"

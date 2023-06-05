@@ -2,7 +2,7 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.StudyMate" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
-         <item name="colorPrimary">@color/mid_blue</item>
+         <item name="colorPrimary">@color/black</item>
     </style>
 
     <style name="Theme.StudyMate" parent="Base.Theme.StudyMate" />

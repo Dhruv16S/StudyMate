@@ -17,6 +17,7 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import io.appwrite.Client
 import io.appwrite.services.Databases
 import io.appwrite.services.Account
@@ -39,6 +40,9 @@ class SignUp : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_up)
+
+        window.statusBarColor = ContextCompat.getColor(this, R.color.mid_blue)
+
         textTagline = findViewById(R.id.signUptextTagline)
         emailAddress = findViewById(R.id.signUpeditTextUsername)
         password = findViewById(R.id.signUpeditTextPassword)
@@ -69,14 +73,6 @@ class SignUp : AppCompatActivity() {
             else {
                 if(signUpCheckBox.isChecked){
                     registerUser(userEmail, userPwd)
-                    intent = Intent(this@SignUp, HomePage::class.java)
-                    val editor : SharedPreferences.Editor = preferences.edit()
-                    editor.putString("Email", userEmail)
-                    editor.putString("Pwd", userPwd)
-                    editor.putBoolean("CHECKBOX", true)
-                    editor.apply()
-                    startActivity(intent)
-                    finish()
                 }
             }
         }
@@ -102,6 +98,14 @@ class SignUp : AppCompatActivity() {
                 )
                 // Handle successful registration
                 Toast.makeText(this@SignUp, "User registered successfully", Toast.LENGTH_SHORT).show()
+                intent = Intent(this@SignUp, HomePage::class.java)
+                val editor : SharedPreferences.Editor = preferences.edit()
+                editor.putString("Email", userEmail)
+                editor.putString("Pwd", userPwd)
+                editor.putBoolean("CHECKBOX", true)
+                editor.apply()
+                startActivity(intent)
+                finish()
                 checkUser(userEmail, userPwd)
             } catch (e: Exception) {
                 // Handle registration failure
