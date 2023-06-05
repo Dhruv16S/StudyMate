@@ -29,7 +29,7 @@ class HomePage : AppCompatActivity() {
         var fragmentTransaction : FragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.add(R.id.frame, HomeFragment())
         fragmentTransaction.commit()
-
+        menu.performClick()
         menu.eventListener = object : CircleMenuView.EventListener() {
             override fun onButtonClickAnimationStart(view: CircleMenuView, index: Int) {
                 when (index) {

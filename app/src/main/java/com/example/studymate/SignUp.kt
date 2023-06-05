@@ -71,9 +71,9 @@ class SignUp : AppCompatActivity() {
             else if(userPwd != userCPwd)
                 Toast.makeText(this, "The passwords do not match", Toast.LENGTH_SHORT).show()
             else {
-                if(signUpCheckBox.isChecked){
+
                     registerUser(userEmail, userPwd)
-                }
+
             }
         }
     }
@@ -99,11 +99,13 @@ class SignUp : AppCompatActivity() {
                 // Handle successful registration
                 Toast.makeText(this@SignUp, "User registered successfully", Toast.LENGTH_SHORT).show()
                 intent = Intent(this@SignUp, HomePage::class.java)
-                val editor : SharedPreferences.Editor = preferences.edit()
-                editor.putString("Email", userEmail)
-                editor.putString("Pwd", userPwd)
-                editor.putBoolean("CHECKBOX", true)
-                editor.apply()
+                if(signUpCheckBox.isChecked){
+                    val editor: SharedPreferences.Editor = preferences.edit()
+                    editor.putString("Email", userEmail)
+                    editor.putString("Pwd", userPwd)
+                    editor.putBoolean("CHECKBOX", true)
+                    editor.apply()
+                }
                 startActivity(intent)
                 finish()
                 checkUser(userEmail, userPwd)

@@ -1,12 +1,22 @@
 package com.example.studymate
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Typeface
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.Gravity
+import android.Manifest
+import android.content.ContentUris
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.os.Environment
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -23,6 +33,8 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.cardview.widget.CardView
+import androidx.core.app.ActivityCompat
+import androidx.core.content.FileProvider
 import androidx.core.view.marginBottom
 import androidx.core.view.marginStart
 import io.appwrite.Client
@@ -30,6 +42,15 @@ import io.appwrite.services.Databases
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.text.TextRecognition
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class CreateNotesFragment : Fragment() {
 
@@ -45,16 +66,27 @@ class CreateNotesFragment : Fragment() {
     private lateinit var userId : String
     private lateinit var sessionId : String
     private var docCount : Int = 0
-
+    private var capturedImageUri: Uri? = null
     private var sentencesList = mutableListOf<String>()
     private var i : Int = 1
+    private val CAMERA_PERMISSION_REQUEST_CODE = 100
+    private val IMAGE_CAPTURE_REQUEST_CODE = 200
+    private val IMAGE_FILE_NAME = "captured_image.jpg"
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
+        
         val v : View = inflater.inflate(R.layout.fragment_create_notes, container, false)
+
+        if (hasCameraPermission()) {
+            // Start the camera
+        } else {
+            // Request camera permission
+            requestCameraPermission()
+        }
 
         addText = v.findViewById(R.id.addText)
         addFile = v.findViewById(R.id.addFile)
@@ -128,7 +160,6 @@ class CreateNotesFragment : Fragment() {
 
             // Add the CardView to the parent LinearLayout (displayNotes)
             displayNotes.addView(cardView)
-
             i += 1
             noteContent.setText("")
         }
@@ -139,7 +170,21 @@ class CreateNotesFragment : Fragment() {
         }
 
         addOcr.setOnClickListener {
+            val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
 
+            // Create a file to store the captured image in the app-specific directory
+            val imageFile = createImageFile()
+            if (imageFile != null) {
+                capturedImageUri = FileProvider.getUriForFile(
+                    requireContext(),
+                    requireContext().packageName + ".fileprovider",
+                    imageFile
+                )
+                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, capturedImageUri)
+                startActivityForResult(cameraIntent, IMAGE_CAPTURE_REQUEST_CODE)
+            } else {
+                Toast.makeText(context, "Failed to create image file", Toast.LENGTH_SHORT).show()
+            }
         }
 
         saveNotes.setOnClickListener {
@@ -148,7 +193,6 @@ class CreateNotesFragment : Fragment() {
                 Toast.makeText(context, "Enter a Note Name to proceed", Toast.LENGTH_SHORT).show()
             } else {
 
-                Log.d("list", sentencesList.toString())
                 CoroutineScope(Dispatchers.Main).launch {
 
                     val client = Client(requireContext())
@@ -159,8 +203,8 @@ class CreateNotesFragment : Fragment() {
 
                     // Create a collection first
                     // Could not do this
-                    Log.d("userId", userId)
-                    Log.d("userId", sessionId)
+
+
                     try {
                         val response = databases.createDocument(
                             databaseId = "6479d563804822fc79bb",
@@ -201,4 +245,93 @@ class CreateNotesFragment : Fragment() {
         val scale = Resources.getSystem().displayMetrics.density
         return (this * scale + 0.5f).toInt()
     }
+
+    private fun createImageFile(): File? {
+        val storageDir: File? = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        return File(storageDir, IMAGE_FILE_NAME)
+    }
+    private fun hasCameraPermission(): Boolean {
+        val permission = Manifest.permission.CAMERA
+        val result = ContextCompat.checkSelfPermission(requireContext(), permission)
+        return result == PackageManager.PERMISSION_GRANTED
+    }
+
+
+    private fun requestCameraPermission() {
+        ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.CAMERA), CAMERA_PERMISSION_REQUEST_CODE)
+    }
+
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == IMAGE_CAPTURE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            val imageUri = capturedImageUri // Use the captured image URI instead of data extras
+            if (imageUri != null) {
+                val imageBitmap = loadBitmapFromUri(imageUri)
+                if (imageBitmap != null) {
+                    val processedImageUri = saveImageAndGetUri(imageBitmap)
+                    processedImageUri?.let { uri ->
+                        processCapturedImage(uri)
+                    }
+                } else {
+                    Log.d("URI", "Failed to load image bitmap from URI.")
+                }
+            } else {
+                Log.d("URI", "Captured image URI is null.")
+            }
+        }
+    }
+
+    private fun loadBitmapFromUri(uri: Uri): Bitmap? {
+        return try {
+            val inputStream = requireContext().contentResolver.openInputStream(uri)
+            BitmapFactory.decodeStream(inputStream)
+        } catch (e: IOException) {
+            Log.e("LoadBitmap", "Error loading image bitmap: ${e.message}")
+            null
+        }
+    }
+
+
+    private fun saveImageAndGetUri(imageBitmap: Bitmap): Uri? {
+        val imagesDirectory = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+        val fileName = "IMG_$timeStamp.jpg"
+
+        val file = File(imagesDirectory, fileName)
+        return try {
+            FileOutputStream(file).use { outputStream ->
+                imageBitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream)
+                outputStream.flush()
+            }
+            FileProvider.getUriForFile(requireContext(), requireContext().packageName + ".fileprovider", file)
+        } catch (e: IOException) {
+            Log.e("SaveImage", "Error saving image: ${e.message}")
+            null
+        }
+    }
+
+
+    private fun processCapturedImage(uri: Uri) {
+        val image = InputImage.fromFilePath(requireContext(), uri)
+
+        val recognizerOptions = TextRecognizerOptions.Builder()
+            // Add any desired options here
+            .build()
+        val recognizer = TextRecognition.getClient(recognizerOptions)
+        val updatedRecognizer = TextRecognition.getClient(recognizerOptions)
+        updatedRecognizer.process(image)
+            .addOnSuccessListener { visionText ->
+                val recognizedText = visionText.text
+
+                // Handle the recognized text as desired
+                Log.d("OCR", "Recognized Text: $recognizedText")
+            }
+            .addOnFailureListener { exception ->
+                // Handle the OCR failure
+                exception.printStackTrace()
+            }
+    }
+
 }
