@@ -53,6 +53,7 @@ import java.net.URLDecoder
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import com.atwa.filepicker.core.FilePicker
 
 class CreateNotesFragment : Fragment() {
 
@@ -77,7 +78,8 @@ class CreateNotesFragment : Fragment() {
     private val IMAGE_CAPTURE_REQUEST_CODE = 200
     private val IMAGE_FILE_NAME = "captured_image.jpg"
     private val FILE_CHOOSER_REQUEST_CODE = 300
-    private val READ_EXTERNAL_STORAGE_PERMISSION_CODE = 2
+    private lateinit var filePicker: FilePicker
+    private lateinit var filePath :File
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -94,15 +96,6 @@ class CreateNotesFragment : Fragment() {
             requestCameraPermission()
         }
 
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
-            != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(requireActivity(),
-                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-                READ_EXTERNAL_STORAGE_PERMISSION_CODE)
-        } else {
-            openFileChooser()
-        }
-
         addText = v.findViewById(R.id.addText)
         addFile = v.findViewById(R.id.addFile)
         addOcr = v.findViewById(R.id.addOcr)
@@ -114,6 +107,7 @@ class CreateNotesFragment : Fragment() {
         preferences = requireActivity().getSharedPreferences("SHARED_PREF", Context.MODE_PRIVATE)
         sessionId = preferences.getString("sessionId", " ").toString()
         userId = preferences.getString("userId", " ").toString()
+        filePicker = FilePicker.getInstance(this)
 
         addText.setOnClickListener {
             val toBeAdded = noteContent.text.toString()
@@ -124,19 +118,39 @@ class CreateNotesFragment : Fragment() {
             }
             // Create a new CardView
             sentencesList.add(toBeAdded)
-            createCardText(toBeAdded, i, false)
+            createCardText(toBeAdded, i, false, false)
             i += 1
         }
 
         addFile.setOnClickListener {
             fileCount += 1
-            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-                addCategory(Intent.CATEGORY_OPENABLE)
-                addCategory(Intent.ACTION_GET_CONTENT)
-                type = "*/*" // Set the desired file type(s) here
+            filePicker.pickFile { selectedFile ->
+                selectedFile?.let {
+                    val filePath = it.file
+                    val fileName: String? = it.name
+                    // Continue with the file processing logic
+                    CoroutineScope(Dispatchers.Main).launch {
+                        val client = Client(requireContext())
+                            .setEndpoint("https://cloud.appwrite.io/v1")
+                            .setProject("64734c27ee025a6ee21c")
+                        val storage = Storage(client)
+                        try {
+                            val response = storage.createFile(
+                                bucketId = "647d72e7564902ca8b17",
+                                fileId = sessionId + fileCount.toString(),
+                                file = InputFile.fromPath(filePath.toString()),
+                            )
+                            // Mention file creation
+                            Toast.makeText(context, "File Uploaded!", Toast.LENGTH_SHORT).show()
+                            createCardText(fileName.toString(), fileCount, false, true)
+                        } catch (e: Exception) {
+                            Log.e("Appwrite", "Error: " + e.message)
+                        }
+                    }
+                }
             }
-            startActivityForResult(intent, FILE_CHOOSER_REQUEST_CODE)
         }
+
 
         addOcr.setOnClickListener {
             val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
@@ -203,7 +217,7 @@ class CreateNotesFragment : Fragment() {
         return v
     }
 
-    private fun createCardText(toBeAdded : String, count : Int, isOcr : Boolean) {
+    private fun createCardText(toBeAdded : String, count : Int, isOcr : Boolean, isFile : Boolean) {
         val cardView = CardView(requireContext())
 
         // Set CardView layout parameters
@@ -222,6 +236,8 @@ class CreateNotesFragment : Fragment() {
         val textView = TextView(requireContext())
         if(isOcr)
             textView.text = "OCR Detected Note ${count}:"
+        else if(isFile)
+            textView.text = "File ${count}: ${toBeAdded}"
         else
             textView.text = "Note ${count}:"
         textView.typeface = ResourcesCompat.getFont(requireContext(), R.font.open_sans)
@@ -232,27 +248,27 @@ class CreateNotesFragment : Fragment() {
         // Add the TextView to the LinearLayout
         linearLayout.addView(textView)
 
-        // Create the EditText
-        val editText = EditText(requireContext())
-        val editTextLayoutParams = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        )
+        if(!isFile){// Create the EditText
+            val editText = EditText(requireContext())
+            val editTextLayoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
 
-        editText.layoutParams = editTextLayoutParams
-        editText.typeface = ResourcesCompat.getFont(requireContext(), R.font.open_sans)
-        editText.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
-        editText.setHintTextColor(ContextCompat.getColor(requireContext(), R.color.white))
-        editText.setBackgroundResource(0) // Removes the line associated with the EditText
-        editText.setTextCursorDrawable(R.drawable.black_cursor)
-        editText.setText(toBeAdded)
-        editText.tag = "noteEditText"
-        editText.textSize = 17.0f
-        editText.setTypeface(null, Typeface.BOLD)
+            editText.layoutParams = editTextLayoutParams
+            editText.typeface = ResourcesCompat.getFont(requireContext(), R.font.open_sans)
+            editText.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+            editText.setHintTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+            editText.setBackgroundResource(0) // Removes the line associated with the EditText
+            editText.setTextCursorDrawable(R.drawable.black_cursor)
+            editText.setText(toBeAdded)
+            editText.tag = "noteEditText"
+            editText.textSize = 17.0f
+            editText.setTypeface(null, Typeface.BOLD)
 
-        // Add the EditText to the LinearLayout
-        linearLayout.addView(editText)
-
+            // Add the EditText to the LinearLayout
+            linearLayout.addView(editText)
+        }
         // Add the LinearLayout to the CardView
         cardView.addView(linearLayout)
         // Add the CardView to the parent LinearLayout (displayNotes)
@@ -297,41 +313,6 @@ class CreateNotesFragment : Fragment() {
                 Log.d("URI", "Captured image URI is null.")
             }
         }
-        // onActivity for files
-        else if(requestCode == FILE_CHOOSER_REQUEST_CODE && resultCode == Activity.RESULT_OK){
-            val selectedFileUri = data?.data
-            val filePath = selectedFileUri?.let { uri ->
-                Log.d("URI", "$uri")
-                getFilePathFromUri(uri)
-            }
-
-            // Use the filePath as needed
-            Log.d("URI", "$filePath")
-            if (filePath != null) {
-                // Process the selected file path
-                CoroutineScope(Dispatchers.Main).launch {
-                    val client = Client(requireContext())
-                        .setEndpoint("https://cloud.appwrite.io/v1")
-                        .setProject("64734c27ee025a6ee21c")
-                    val storage = Storage(client)
-                    try {
-                        val response = storage.createFile(
-                            bucketId = "647d72e7564902ca8b17",
-                            fileId = sessionId + fileCount.toString(),
-                            file = InputFile.fromPath(filePath),
-                        )
-                        // Mention file creation
-                        Toast.makeText(context, "File Uploaded!", Toast.LENGTH_SHORT).show()
-                    } catch (e: Exception) {
-                        Log.e("Appwrite", "Error: " + e.message)
-                    }
-                }
-
-            } else {
-                // Handle the case when no file path is available
-                Toast.makeText(context, "No file chosen", Toast.LENGTH_SHORT).show()
-            }
-        }
     }
 
     private fun loadBitmapFromUri(uri: Uri): Bitmap? {
@@ -374,7 +355,7 @@ class CreateNotesFragment : Fragment() {
                 var recognizedText = visionText.text
                 // Handle the recognized text as desired
                 recognizedText = recognizedText.replace("\n", ". ")
-                createCardText(recognizedText, countOcr, true)
+                createCardText(recognizedText, countOcr, true, false)
                 sentencesList.add(recognizedText)
                 countOcr += 1
             }
@@ -382,39 +363,5 @@ class CreateNotesFragment : Fragment() {
                 // Handle the OCR failure
                 exception.printStackTrace()
             }
-    }
-
-    private fun getFilePathFromUri(uri: Uri): String? {
-        val decodedUri = URLDecoder.decode(uri.toString(), "UTF-8")
-        val document = DocumentFile.fromSingleUri(requireContext(), Uri.parse(decodedUri))
-        val fileName = document?.name ?: return null
-
-        val treeUri = DocumentsContract.buildTreeDocumentUri(uri.authority, DocumentsContract.getTreeDocumentId(uri))
-        val treeDocument = DocumentFile.fromTreeUri(requireContext(), treeUri)
-        val file = treeDocument?.findFile(fileName)
-
-        return file?.uri?.path
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        if (requestCode == READ_EXTERNAL_STORAGE_PERMISSION_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                openFileChooser()
-            } else {
-                // Permission denied, handle accordingly
-                Toast.makeText(context, "Permission denied", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-    private fun openFileChooser() {
-        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-            addCategory(Intent.CATEGORY_OPENABLE)
-            type = "*/*" // Set the desired file type(s) here
-        }
-        startActivityForResult(intent, FILE_CHOOSER_REQUEST_CODE)
     }
 }
