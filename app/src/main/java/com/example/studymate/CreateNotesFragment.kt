@@ -11,19 +11,19 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
-import android.view.Gravity
 import android.Manifest
 import android.content.ContentUris
+import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Environment
+import android.provider.DocumentsContract
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import androidx.core.content.ContextCompat
@@ -35,8 +35,7 @@ import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
-import androidx.core.view.marginBottom
-import androidx.core.view.marginStart
+import androidx.documentfile.provider.DocumentFile
 import io.appwrite.Client
 import io.appwrite.services.Databases
 import kotlinx.coroutines.CoroutineScope
@@ -45,9 +44,12 @@ import kotlinx.coroutines.launch
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
+import io.appwrite.models.InputFile
+import io.appwrite.services.Storage
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.net.URLDecoder
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -66,12 +68,16 @@ class CreateNotesFragment : Fragment() {
     private lateinit var userId : String
     private lateinit var sessionId : String
     private var docCount : Int = 0
+    private var fileCount : Int = 0
     private var capturedImageUri: Uri? = null
     private var sentencesList = mutableListOf<String>()
     private var i : Int = 1
+    private var countOcr : Int = 1
     private val CAMERA_PERMISSION_REQUEST_CODE = 100
     private val IMAGE_CAPTURE_REQUEST_CODE = 200
     private val IMAGE_FILE_NAME = "captured_image.jpg"
+    private val FILE_CHOOSER_REQUEST_CODE = 300
+    private val READ_EXTERNAL_STORAGE_PERMISSION_CODE = 2
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -86,6 +92,15 @@ class CreateNotesFragment : Fragment() {
         } else {
             // Request camera permission
             requestCameraPermission()
+        }
+
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
+            != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(requireActivity(),
+                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                READ_EXTERNAL_STORAGE_PERMISSION_CODE)
+        } else {
+            openFileChooser()
         }
 
         addText = v.findViewById(R.id.addText)
@@ -109,64 +124,18 @@ class CreateNotesFragment : Fragment() {
             }
             // Create a new CardView
             sentencesList.add(toBeAdded)
-            val cardView = CardView(requireContext())
-
-            // Set CardView layout parameters
-            val cardLayoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
-            cardLayoutParams.setMargins(10.0.dpToPx(), 5.0.dpToPx(), 10.0.dpToPx(), 5.0.dpToPx())
-            cardView.layoutParams = cardLayoutParams
-            cardView.cardElevation = 25.0.dpToPx().toFloat()
-            cardView.setBackgroundResource(R.drawable.note_card_template)
-
-            // Create a LinearLayout to hold the TextView and EditText
-            val linearLayout = LinearLayout(requireContext())
-            linearLayout.orientation = LinearLayout.VERTICAL
-            linearLayout.setPadding(16.0.dpToPx(), 16.0.dpToPx(), 16.0.dpToPx(), 16.0.dpToPx())
-
-            // Create the TextView
-            val textView = TextView(requireContext())
-            textView.text = "Note ${i}:"
-            textView.typeface = ResourcesCompat.getFont(requireContext(), R.font.open_sans)
-            textView.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
-            textView.textSize = 16.0f
-            textView.setTypeface(null, Typeface.BOLD)
-
-            // Add the TextView to the LinearLayout
-            linearLayout.addView(textView)
-
-            // Create the EditText
-            val editText = EditText(requireContext())
-            val editTextLayoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-
-            editText.layoutParams = editTextLayoutParams
-            editText.typeface = ResourcesCompat.getFont(requireContext(), R.font.open_sans)
-            editText.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
-            editText.setHintTextColor(ContextCompat.getColor(requireContext(), R.color.white))
-            editText.setBackgroundResource(0) // Removes the line associated with the EditText
-            editText.setTextCursorDrawable(R.drawable.black_cursor)
-            editText.setText(toBeAdded)
-            editText.tag = "noteEditText"
-            editText.textSize = 17.0f
-            editText.setTypeface(null, Typeface.BOLD)
-
-            // Add the EditText to the LinearLayout
-            linearLayout.addView(editText)
-
-            // Add the LinearLayout to the CardView
-            cardView.addView(linearLayout)
-
-            // Add the CardView to the parent LinearLayout (displayNotes)
-            displayNotes.addView(cardView)
+            createCardText(toBeAdded, i, false)
             i += 1
-            noteContent.setText("")
         }
 
-
         addFile.setOnClickListener {
-
+            fileCount += 1
+            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                addCategory(Intent.CATEGORY_OPENABLE)
+                addCategory(Intent.ACTION_GET_CONTENT)
+                type = "*/*" // Set the desired file type(s) here
+            }
+            startActivityForResult(intent, FILE_CHOOSER_REQUEST_CODE)
         }
 
         addOcr.setOnClickListener {
@@ -194,17 +163,10 @@ class CreateNotesFragment : Fragment() {
             } else {
 
                 CoroutineScope(Dispatchers.Main).launch {
-
                     val client = Client(requireContext())
                         .setEndpoint("https://cloud.appwrite.io/v1")
                         .setProject("64734c27ee025a6ee21c")
-
                     val databases = Databases(client)
-
-                    // Create a collection first
-                    // Could not do this
-
-
                     try {
                         val response = databases.createDocument(
                             databaseId = "6479d563804822fc79bb",
@@ -220,6 +182,7 @@ class CreateNotesFragment : Fragment() {
                         Toast.makeText(context, "Note Created!", Toast.LENGTH_SHORT).show()
                         sentencesList = mutableListOf<String>()
                         i = 0
+                        countOcr = 0
                         noteName.setText("")
                         displayNotes.removeAllViews()
                     } catch (e: Exception) {
@@ -228,7 +191,6 @@ class CreateNotesFragment : Fragment() {
                 }
             }
         }
-
 
         v.setOnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_DOWN) {
@@ -239,6 +201,63 @@ class CreateNotesFragment : Fragment() {
         }
 
         return v
+    }
+
+    private fun createCardText(toBeAdded : String, count : Int, isOcr : Boolean) {
+        val cardView = CardView(requireContext())
+
+        // Set CardView layout parameters
+        val cardLayoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+        cardLayoutParams.setMargins(10.0.dpToPx(), 5.0.dpToPx(), 10.0.dpToPx(), 5.0.dpToPx())
+        cardView.layoutParams = cardLayoutParams
+        cardView.cardElevation = 25.0.dpToPx().toFloat()
+        cardView.setBackgroundResource(R.drawable.note_card_template)
+
+        // Create a LinearLayout to hold the TextView and EditText
+        val linearLayout = LinearLayout(requireContext())
+        linearLayout.orientation = LinearLayout.VERTICAL
+        linearLayout.setPadding(16.0.dpToPx(), 16.0.dpToPx(), 16.0.dpToPx(), 16.0.dpToPx())
+
+        // Create the TextView
+        val textView = TextView(requireContext())
+        if(isOcr)
+            textView.text = "OCR Detected Note ${count}:"
+        else
+            textView.text = "Note ${count}:"
+        textView.typeface = ResourcesCompat.getFont(requireContext(), R.font.open_sans)
+        textView.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
+        textView.textSize = 16.0f
+        textView.setTypeface(null, Typeface.BOLD)
+
+        // Add the TextView to the LinearLayout
+        linearLayout.addView(textView)
+
+        // Create the EditText
+        val editText = EditText(requireContext())
+        val editTextLayoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        )
+
+        editText.layoutParams = editTextLayoutParams
+        editText.typeface = ResourcesCompat.getFont(requireContext(), R.font.open_sans)
+        editText.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+        editText.setHintTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+        editText.setBackgroundResource(0) // Removes the line associated with the EditText
+        editText.setTextCursorDrawable(R.drawable.black_cursor)
+        editText.setText(toBeAdded)
+        editText.tag = "noteEditText"
+        editText.textSize = 17.0f
+        editText.setTypeface(null, Typeface.BOLD)
+
+        // Add the EditText to the LinearLayout
+        linearLayout.addView(editText)
+
+        // Add the LinearLayout to the CardView
+        cardView.addView(linearLayout)
+        // Add the CardView to the parent LinearLayout (displayNotes)
+        displayNotes.addView(cardView)
+        noteContent.setText("")
     }
 
     private fun Double.dpToPx(): Int {
@@ -256,12 +275,9 @@ class CreateNotesFragment : Fragment() {
         return result == PackageManager.PERMISSION_GRANTED
     }
 
-
     private fun requestCameraPermission() {
         ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.CAMERA), CAMERA_PERMISSION_REQUEST_CODE)
     }
-
-
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -281,6 +297,41 @@ class CreateNotesFragment : Fragment() {
                 Log.d("URI", "Captured image URI is null.")
             }
         }
+        // onActivity for files
+        else if(requestCode == FILE_CHOOSER_REQUEST_CODE && resultCode == Activity.RESULT_OK){
+            val selectedFileUri = data?.data
+            val filePath = selectedFileUri?.let { uri ->
+                Log.d("URI", "$uri")
+                getFilePathFromUri(uri)
+            }
+
+            // Use the filePath as needed
+            Log.d("URI", "$filePath")
+            if (filePath != null) {
+                // Process the selected file path
+                CoroutineScope(Dispatchers.Main).launch {
+                    val client = Client(requireContext())
+                        .setEndpoint("https://cloud.appwrite.io/v1")
+                        .setProject("64734c27ee025a6ee21c")
+                    val storage = Storage(client)
+                    try {
+                        val response = storage.createFile(
+                            bucketId = "647d72e7564902ca8b17",
+                            fileId = sessionId + fileCount.toString(),
+                            file = InputFile.fromPath(filePath),
+                        )
+                        // Mention file creation
+                        Toast.makeText(context, "File Uploaded!", Toast.LENGTH_SHORT).show()
+                    } catch (e: Exception) {
+                        Log.e("Appwrite", "Error: " + e.message)
+                    }
+                }
+
+            } else {
+                // Handle the case when no file path is available
+                Toast.makeText(context, "No file chosen", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun loadBitmapFromUri(uri: Uri): Bitmap? {
@@ -292,7 +343,6 @@ class CreateNotesFragment : Fragment() {
             null
         }
     }
-
 
     private fun saveImageAndGetUri(imageBitmap: Bitmap): Uri? {
         val imagesDirectory = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
@@ -312,21 +362,21 @@ class CreateNotesFragment : Fragment() {
         }
     }
 
-
     private fun processCapturedImage(uri: Uri) {
         val image = InputImage.fromFilePath(requireContext(), uri)
 
         val recognizerOptions = TextRecognizerOptions.Builder()
-            // Add any desired options here
             .build()
         val recognizer = TextRecognition.getClient(recognizerOptions)
         val updatedRecognizer = TextRecognition.getClient(recognizerOptions)
         updatedRecognizer.process(image)
             .addOnSuccessListener { visionText ->
-                val recognizedText = visionText.text
-
+                var recognizedText = visionText.text
                 // Handle the recognized text as desired
-                Log.d("OCR", "Recognized Text: $recognizedText")
+                recognizedText = recognizedText.replace("\n", ". ")
+                createCardText(recognizedText, countOcr, true)
+                sentencesList.add(recognizedText)
+                countOcr += 1
             }
             .addOnFailureListener { exception ->
                 // Handle the OCR failure
@@ -334,4 +384,37 @@ class CreateNotesFragment : Fragment() {
             }
     }
 
+    private fun getFilePathFromUri(uri: Uri): String? {
+        val decodedUri = URLDecoder.decode(uri.toString(), "UTF-8")
+        val document = DocumentFile.fromSingleUri(requireContext(), Uri.parse(decodedUri))
+        val fileName = document?.name ?: return null
+
+        val treeUri = DocumentsContract.buildTreeDocumentUri(uri.authority, DocumentsContract.getTreeDocumentId(uri))
+        val treeDocument = DocumentFile.fromTreeUri(requireContext(), treeUri)
+        val file = treeDocument?.findFile(fileName)
+
+        return file?.uri?.path
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode == READ_EXTERNAL_STORAGE_PERMISSION_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                openFileChooser()
+            } else {
+                // Permission denied, handle accordingly
+                Toast.makeText(context, "Permission denied", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+    private fun openFileChooser() {
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "*/*" // Set the desired file type(s) here
+        }
+        startActivityForResult(intent, FILE_CHOOSER_REQUEST_CODE)
+    }
 }
