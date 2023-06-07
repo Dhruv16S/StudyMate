@@ -12,12 +12,10 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.Manifest
-import android.content.ContentUris
-import android.database.Cursor
+import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Environment
-import android.provider.DocumentsContract
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -35,7 +33,6 @@ import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
-import androidx.documentfile.provider.DocumentFile
 import io.appwrite.Client
 import io.appwrite.services.Databases
 import kotlinx.coroutines.CoroutineScope
@@ -49,12 +46,15 @@ import io.appwrite.services.Storage
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import java.net.URLDecoder
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import com.atwa.filepicker.core.FilePicker
+import com.itextpdf.text.pdf.PdfReader
+import com.itextpdf.text.pdf.parser.PdfTextExtractor
 
+
+@Suppress("DEPRECATION")
 class CreateNotesFragment : Fragment() {
 
     private lateinit var addText : Button
@@ -74,13 +74,12 @@ class CreateNotesFragment : Fragment() {
     private var sentencesList = mutableListOf<String>()
     private var i : Int = 1
     private var countOcr : Int = 1
-    private val CAMERA_PERMISSION_REQUEST_CODE = 100
-    private val IMAGE_CAPTURE_REQUEST_CODE = 200
-    private val IMAGE_FILE_NAME = "captured_image.jpg"
-    private val FILE_CHOOSER_REQUEST_CODE = 300
+    private val cameraPermissionRequestCode = 100
+    private val imageCaptureRequestCode = 200
+    private val imageFileName = "captured_image.jpg"
     private lateinit var filePicker: FilePicker
-    private lateinit var filePath :File
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -118,7 +117,7 @@ class CreateNotesFragment : Fragment() {
             }
             // Create a new CardView
             sentencesList.add(toBeAdded)
-            createCardText(toBeAdded, i, false, false)
+            createCardText(toBeAdded, i, isOcr = false, isFile = false)
             i += 1
         }
 
@@ -127,7 +126,13 @@ class CreateNotesFragment : Fragment() {
             filePicker.pickFile { selectedFile ->
                 selectedFile?.let {
                     val filePath = it.file
+                    val type = filePath.toString().takeLast(3)
                     val fileName: String? = it.name
+                    if(type == "pdf"){
+                        val extractedData =
+                            extractData(filePath.toString()).replace(Regex("[\n\\s]+"), " ")
+                        sentencesList.add(extractedData)
+                    }
                     // Continue with the file processing logic
                     CoroutineScope(Dispatchers.Main).launch {
                         val client = Client(requireContext())
@@ -135,14 +140,17 @@ class CreateNotesFragment : Fragment() {
                             .setProject("64734c27ee025a6ee21c")
                         val storage = Storage(client)
                         try {
-                            val response = storage.createFile(
+                            storage.createFile(
                                 bucketId = "647d72e7564902ca8b17",
                                 fileId = sessionId + fileCount.toString(),
                                 file = InputFile.fromPath(filePath.toString()),
                             )
                             // Mention file creation
                             Toast.makeText(context, "File Uploaded!", Toast.LENGTH_SHORT).show()
-                            createCardText(fileName.toString(), fileCount, false, true)
+                            createCardText(fileName.toString(), fileCount,
+                                isOcr = false,
+                                isFile = true
+                            )
                         } catch (e: Exception) {
                             Log.e("Appwrite", "Error: " + e.message)
                         }
@@ -157,17 +165,13 @@ class CreateNotesFragment : Fragment() {
 
             // Create a file to store the captured image in the app-specific directory
             val imageFile = createImageFile()
-            if (imageFile != null) {
-                capturedImageUri = FileProvider.getUriForFile(
-                    requireContext(),
-                    requireContext().packageName + ".fileprovider",
-                    imageFile
-                )
-                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, capturedImageUri)
-                startActivityForResult(cameraIntent, IMAGE_CAPTURE_REQUEST_CODE)
-            } else {
-                Toast.makeText(context, "Failed to create image file", Toast.LENGTH_SHORT).show()
-            }
+            capturedImageUri = FileProvider.getUriForFile(
+                requireContext(),
+                requireContext().packageName + ".fileprovider",
+                imageFile
+            )
+            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, capturedImageUri)
+            startActivityForResult(cameraIntent, imageCaptureRequestCode)
         }
 
         saveNotes.setOnClickListener {
@@ -182,7 +186,7 @@ class CreateNotesFragment : Fragment() {
                         .setProject("64734c27ee025a6ee21c")
                     val databases = Databases(client)
                     try {
-                        val response = databases.createDocument(
+                        databases.createDocument(
                             databaseId = "6479d563804822fc79bb",
                             collectionId = "6479f9af8834a056c20d",
                             documentId = sessionId + docCount.toString(),
@@ -194,7 +198,7 @@ class CreateNotesFragment : Fragment() {
                                 )
                         )
                         Toast.makeText(context, "Note Created!", Toast.LENGTH_SHORT).show()
-                        sentencesList = mutableListOf<String>()
+                        sentencesList = mutableListOf()
                         i = 0
                         countOcr = 0
                         noteName.setText("")
@@ -217,6 +221,7 @@ class CreateNotesFragment : Fragment() {
         return v
     }
 
+    @SuppressLint("SetTextI18n")
     private fun createCardText(toBeAdded : String, count : Int, isOcr : Boolean, isFile : Boolean) {
         val cardView = CardView(requireContext())
 
@@ -237,7 +242,7 @@ class CreateNotesFragment : Fragment() {
         if(isOcr)
             textView.text = "OCR Detected Note ${count}:"
         else if(isFile)
-            textView.text = "File ${count}: ${toBeAdded}"
+            textView.text = "File ${count}: $toBeAdded"
         else
             textView.text = "Note ${count}:"
         textView.typeface = ResourcesCompat.getFont(requireContext(), R.font.open_sans)
@@ -264,7 +269,6 @@ class CreateNotesFragment : Fragment() {
             editText.setText(toBeAdded)
             editText.tag = "noteEditText"
             editText.textSize = 17.0f
-            editText.setTypeface(null, Typeface.BOLD)
 
             // Add the EditText to the LinearLayout
             linearLayout.addView(editText)
@@ -281,9 +285,9 @@ class CreateNotesFragment : Fragment() {
         return (this * scale + 0.5f).toInt()
     }
 
-    private fun createImageFile(): File? {
+    private fun createImageFile(): File {
         val storageDir: File? = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-        return File(storageDir, IMAGE_FILE_NAME)
+        return File(storageDir, imageFileName)
     }
     private fun hasCameraPermission(): Boolean {
         val permission = Manifest.permission.CAMERA
@@ -292,12 +296,13 @@ class CreateNotesFragment : Fragment() {
     }
 
     private fun requestCameraPermission() {
-        ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.CAMERA), CAMERA_PERMISSION_REQUEST_CODE)
+        ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.CAMERA), cameraPermissionRequestCode)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == IMAGE_CAPTURE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+        if (requestCode == imageCaptureRequestCode && resultCode == Activity.RESULT_OK) {
             val imageUri = capturedImageUri // Use the captured image URI instead of data extras
             if (imageUri != null) {
                 val imageBitmap = loadBitmapFromUri(imageUri)
@@ -348,14 +353,14 @@ class CreateNotesFragment : Fragment() {
 
         val recognizerOptions = TextRecognizerOptions.Builder()
             .build()
-        val recognizer = TextRecognition.getClient(recognizerOptions)
+        TextRecognition.getClient(recognizerOptions)
         val updatedRecognizer = TextRecognition.getClient(recognizerOptions)
         updatedRecognizer.process(image)
             .addOnSuccessListener { visionText ->
                 var recognizedText = visionText.text
                 // Handle the recognized text as desired
                 recognizedText = recognizedText.replace("\n", ". ")
-                createCardText(recognizedText, countOcr, true, false)
+                createCardText(recognizedText, countOcr, isOcr = true, isFile = false)
                 sentencesList.add(recognizedText)
                 countOcr += 1
             }
@@ -363,5 +368,28 @@ class CreateNotesFragment : Fragment() {
                 // Handle the OCR failure
                 exception.printStackTrace()
             }
+    }
+    private fun extractData(path : String): String {
+        var extractedText = ""
+        try {
+            val pdfReader = PdfReader(path)
+            val n = pdfReader.numberOfPages
+
+            for (i in 0 until n) {
+                extractedText =
+                    """
+                 $extractedText${
+                        PdfTextExtractor.getTextFromPage(pdfReader, i + 1).trim { it <= ' ' }
+                    }
+                  
+                 """.trimIndent()
+            }
+            pdfReader.close()
+            return extractedText
+        }
+        catch (e: Exception) {
+            e.printStackTrace()
+        }
+    return extractedText
     }
 }

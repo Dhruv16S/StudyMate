@@ -8,4 +8,5 @@
     <color name="dark_blue">#046bfb</color>
     <color name="dark_blue_d1">#045cd3</color>
     <color name="dark_white">#E9E9E9</color>
+    <color name="home_status_bar">#94bbf2</color>
 </resources>

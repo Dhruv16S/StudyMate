@@ -21,7 +21,8 @@
             app:layout_constraintHorizontal_bias="0.893"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.32" />
+            app:layout_constraintVertical_bias="0.32"
+            android:contentDescription="@string/landing_page"/>
 
         <TextView
             android:id="@+id/welcome"
@@ -29,7 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="172dp"
             android:fontFamily="@font/open_sans"
-            android:text="Welcome back!"
+            android:text="@string/welcome_back"
             android:textColor="#000000"
             android:textSize="44sp"
             android:textStyle="bold"
@@ -46,7 +47,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="68dp"
             android:fontFamily="@font/open_sans"
-            android:text="Get started and automate the process of\nNotemaking, Sharing and Reviewing\nthrough the power of ML, NLP and OCR\ntechnologies."
+            android:text="@string/home_text"
             android:textColor="#000000"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -65,7 +66,8 @@
             app:layout_constraintStart_toEndOf="@+id/description"
             app:layout_constraintTop_toTopOf="@+id/description"
             app:layout_constraintVertical_bias="0.486"
-            app:srcCompat="@drawable/baseline_library_add_24" />
+            app:srcCompat="@drawable/baseline_library_add_24"
+            android:contentDescription="@string/make_notes" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 
 class NotesFragment : Fragment() {
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val v : View = inflater.inflate(R.layout.fragment_notes, container, false)
         return v
     }

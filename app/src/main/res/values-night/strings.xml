@@ -1,7 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Study Mate</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="create_notes">Create Notes</string>
     <string name="create_your_notes_manually_or_use_nocr_to_extract_text_from_images">Create your notes manually, add\nfiles or use OCR to extract text \nfrom images.</string>
     <string name="note_title">Note Title</string>

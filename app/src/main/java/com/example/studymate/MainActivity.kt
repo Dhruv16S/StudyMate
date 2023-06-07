@@ -18,12 +18,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import io.appwrite.Client
 import io.appwrite.services.Account
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 
 
+@Suppress("DEPRECATION")
 class MainActivity : AppCompatActivity() {
 
     private lateinit var textTagline : TextView
@@ -33,7 +35,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var login : Button
     private lateinit var loginCheckBox : CheckBox
     private lateinit var preferences: SharedPreferences
-    var remember : Boolean = false
+    private var remember : Boolean = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -80,7 +82,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun isValidEmail(target: String?): Boolean {
-        return !TextUtils.isEmpty(target) && Patterns.EMAIL_ADDRESS.matcher(target).matches()
+        return !TextUtils.isEmpty(target) && Patterns.EMAIL_ADDRESS.matcher(target.toString()).matches()
     }
     private fun animateTagline() {
         val tagline = "Seamless Notemaking\nLearning and\nSharing"
@@ -101,6 +103,7 @@ class MainActivity : AppCompatActivity() {
         }
         handler.postDelayed(runnable, delayMillis.toLong())
     }
+    @OptIn(DelicateCoroutinesApi::class)
     private fun checkUser(userEmail: String?, userPwd: String?) {
         val client = Client(this)
             .setEndpoint("https://cloud.appwrite.io/v1")
@@ -133,8 +136,8 @@ class MainActivity : AppCompatActivity() {
     }
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
         if (currentFocus != null) {
-            val imm = this!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.hideSoftInputFromWindow(this!!.currentFocus!!.windowToken, 0)
+            val imm = this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(this.currentFocus!!.windowToken, 0)
         }
         return super.dispatchTouchEvent(ev)
     }

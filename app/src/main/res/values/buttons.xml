@@ -5,9 +5,9 @@
     <dimen name="design_fab_image_size" tools:override="true">1dp</dimen>
     <array name="icons">
         <item>@drawable/baseline_home</item>
-        <item>@drawable/baseline_question_answer</item>
+        <item>@drawable/save_note_black</item>
         <item>@drawable/baseline_text_snippet</item>
-        <item>@drawable/baseline_account</item>
+        <item>@drawable/baseline_question_answer</item>
         <item>@drawable/baseline_question_answer</item>
         <item>@drawable/baseline_text_snippet</item>
     </array>
