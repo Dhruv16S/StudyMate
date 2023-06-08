@@ -304,7 +304,6 @@ class CreateNotesFragment : Fragment() {
         textView.typeface = ResourcesCompat.getFont(requireContext(), R.font.montserrat)
         textView.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
         textView.textSize = 16.0f
-        textView.setTypeface(null, Typeface.BOLD)
 
         // Add the TextView to the LinearLayout
         linearLayout.addView(textView)

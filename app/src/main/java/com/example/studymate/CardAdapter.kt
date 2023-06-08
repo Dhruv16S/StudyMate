@@ -37,6 +37,7 @@ class CardAdapter(
 
         //card view is defined here, so toast is also specified here
         holder.cardView.setOnClickListener{
+
             Toast.makeText(context, "You selected ${noteName[position]}", Toast.LENGTH_SHORT).show()
         }
 
