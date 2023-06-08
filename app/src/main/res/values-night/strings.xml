@@ -13,4 +13,11 @@
     <string name="welcome_back">Welcome back!</string>
     <string name="home_text">Get started and automate the process of\nNotemaking, Sharing and Reviewing\nthrough the power of ML, NLP and OCR\ntechnologies.</string>
     <string name="make_notes">make notes</string>
+    <string name="email_address">Email Address</string>
+    <string name="user_id">User ID</string>
+    <string name="notes">Notes Created: </string>
+    <string name="files">Files Uploaded: </string>
+    <string name="question_cards">Question Cards: </string>
+    <string name="notes_created">Notes Created</string>
+    <string name="view_update_notes">View or update your notes here</string>
 </resources>

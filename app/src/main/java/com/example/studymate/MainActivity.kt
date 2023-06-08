@@ -52,7 +52,10 @@ class MainActivity : AppCompatActivity() {
         remember = preferences.getBoolean("CHECKBOX", false)
 
         if(remember){
-            checkUser(preferences.getString("Email", " "), preferences.getString("Pwd", " "))
+            val intent = Intent(this@MainActivity, HomePage::class.java)
+            val editor : SharedPreferences.Editor = preferences.edit()
+            startActivity(intent)
+            finish()
         }
 
         signUp.setOnClickListener {
@@ -141,7 +144,5 @@ class MainActivity : AppCompatActivity() {
         }
         return super.dispatchTouchEvent(ev)
     }
-
-
 }
 

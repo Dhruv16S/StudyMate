@@ -6,7 +6,6 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.res.Resources
-import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -15,6 +14,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Typeface
 import android.os.Environment
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -52,7 +52,9 @@ import java.util.Locale
 import com.atwa.filepicker.core.FilePicker
 import com.itextpdf.text.pdf.PdfReader
 import com.itextpdf.text.pdf.parser.PdfTextExtractor
-
+import io.appwrite.ID
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 
 @Suppress("DEPRECATION")
 class CreateNotesFragment : Fragment() {
@@ -78,6 +80,7 @@ class CreateNotesFragment : Fragment() {
     private val imageCaptureRequestCode = 200
     private val imageFileName = "captured_image.jpg"
     private lateinit var filePicker: FilePicker
+    private lateinit var tempFileId : String
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
@@ -87,13 +90,9 @@ class CreateNotesFragment : Fragment() {
         // Inflate the layout for this fragment
         
         val v : View = inflater.inflate(R.layout.fragment_create_notes, container, false)
-
-        if (hasCameraPermission()) {
-            // Start the camera
-        } else {
-            // Request camera permission
+        preferences = requireActivity().getSharedPreferences("SHARED_PREF", Context.MODE_PRIVATE)
+        if (!hasCameraPermission())
             requestCameraPermission()
-        }
 
         addText = v.findViewById(R.id.addText)
         addFile = v.findViewById(R.id.addFile)
@@ -108,9 +107,9 @@ class CreateNotesFragment : Fragment() {
         userId = preferences.getString("userId", " ").toString()
         filePicker = FilePicker.getInstance(this)
 
+
         addText.setOnClickListener {
             val toBeAdded = noteContent.text.toString()
-
             if(toBeAdded.isEmpty()){
                 Toast.makeText(context, "Enter some text: ", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
@@ -122,6 +121,7 @@ class CreateNotesFragment : Fragment() {
         }
 
         addFile.setOnClickListener {
+            readAndUpdateDatabase(shouldUpdate = false, isFileUpdate = true)
             fileCount += 1
             filePicker.pickFile { selectedFile ->
                 selectedFile?.let {
@@ -142,15 +142,18 @@ class CreateNotesFragment : Fragment() {
                         try {
                             storage.createFile(
                                 bucketId = "647d72e7564902ca8b17",
-                                fileId = sessionId + fileCount.toString(),
+                                fileId = userId + fileCount.toString(),
                                 file = InputFile.fromPath(filePath.toString()),
                             )
                             // Mention file creation
+                            sentencesList.add(userId + fileCount.toString())
                             Toast.makeText(context, "File Uploaded!", Toast.LENGTH_SHORT).show()
                             createCardText(fileName.toString(), fileCount,
                                 isOcr = false,
                                 isFile = true
                             )
+                            // Update changes to db
+                            readAndUpdateDatabase(shouldUpdate = true, isFileUpdate = true)
                         } catch (e: Exception) {
                             Log.e("Appwrite", "Error: " + e.message)
                         }
@@ -175,7 +178,7 @@ class CreateNotesFragment : Fragment() {
         }
 
         saveNotes.setOnClickListener {
-            docCount += 1
+            readAndUpdateDatabase(shouldUpdate = false, isFileUpdate = false)
             if (noteName.text.isEmpty()) {
                 Toast.makeText(context, "Enter a Note Name to proceed", Toast.LENGTH_SHORT).show()
             } else {
@@ -185,16 +188,19 @@ class CreateNotesFragment : Fragment() {
                         .setEndpoint("https://cloud.appwrite.io/v1")
                         .setProject("64734c27ee025a6ee21c")
                     val databases = Databases(client)
+                    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                    val currentDate = Date()
                     try {
                         databases.createDocument(
                             databaseId = "6479d563804822fc79bb",
                             collectionId = "6479f9af8834a056c20d",
-                            documentId = sessionId + docCount.toString(),
+                            documentId = ID.unique(),
                             data = mapOf(
                                     "session-id" to sessionId,
                                     "user-id" to userId,
                                     "note-name" to noteName.text.toString(),
-                                    "note-content" to sentencesList
+                                    "note-text" to sentencesList,
+                                    "date-created" to dateFormat.format(currentDate)
                                 )
                         )
                         Toast.makeText(context, "Note Created!", Toast.LENGTH_SHORT).show()
@@ -203,6 +209,9 @@ class CreateNotesFragment : Fragment() {
                         countOcr = 0
                         noteName.setText("")
                         displayNotes.removeAllViews()
+                        // Update changes to db
+                        readAndUpdateDatabase(shouldUpdate = true, isFileUpdate = false)
+                        Log.d("count", "$docCount")
                     } catch (e: Exception) {
                         Log.e("Appwrite", "Error: " + e.message)
                     }
@@ -219,6 +228,49 @@ class CreateNotesFragment : Fragment() {
         }
 
         return v
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    private fun readAndUpdateDatabase(shouldUpdate :  Boolean, isFileUpdate : Boolean) {
+        val client = Client(requireContext())
+            .setEndpoint("https://cloud.appwrite.io/v1")
+            .setProject("64734c27ee025a6ee21c")
+
+        val database = Databases(client)
+
+        GlobalScope.launch(Dispatchers.Main) {
+            try {
+                if(!shouldUpdate){
+                    val response = database.getDocument(
+                        databaseId = "648081c3025f25473245",
+                        collectionId = "6480820466d1d4790f90",
+                        documentId = userId,
+                    )
+                    docCount = (response.data["notes"] as Long).toInt()
+                    fileCount = (response.data["files"] as Long).toInt()
+                }
+                else{
+                    if(isFileUpdate)
+                        fileCount += 1
+                    else
+                        docCount += 1
+                    database.updateDocument(
+                        databaseId = "648081c3025f25473245",
+                        collectionId = "6480820466d1d4790f90",
+                        documentId = userId,
+                        data = mapOf(
+                            "files" to fileCount,
+                            "notes" to docCount,
+                        )
+                    )
+                }
+                // Further flow for the logged-in user
+            } catch (e: Exception) {
+                // Handle login failure
+                Toast.makeText(context, "Could not fetch data", Toast.LENGTH_SHORT).show()
+                Log.d("Error", "$e")
+            }
+        }
     }
 
     @SuppressLint("SetTextI18n")
@@ -245,7 +297,7 @@ class CreateNotesFragment : Fragment() {
             textView.text = "File ${count}: $toBeAdded"
         else
             textView.text = "Note ${count}:"
-        textView.typeface = ResourcesCompat.getFont(requireContext(), R.font.open_sans)
+        textView.typeface = ResourcesCompat.getFont(requireContext(), R.font.montserrat)
         textView.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
         textView.textSize = 16.0f
         textView.setTypeface(null, Typeface.BOLD)

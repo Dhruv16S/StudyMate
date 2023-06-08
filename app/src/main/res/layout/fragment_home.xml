@@ -15,14 +15,14 @@
             android:id="@+id/landingImage"
             android:layout_width="261dp"
             android:layout_height="277dp"
+            android:contentDescription="@string/landing_page"
             android:src="@drawable/learning_logo"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.893"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.32"
-            android:contentDescription="@string/landing_page"/>
+            app:layout_constraintVertical_bias="0.07" />
 
         <TextView
             android:id="@+id/welcome"
@@ -39,7 +39,7 @@
             app:layout_constraintHorizontal_bias="0.343"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/landingImage"
-            app:layout_constraintVertical_bias="0.35000002" />
+            app:layout_constraintVertical_bias="1.0" />
 
         <TextView
             android:id="@+id/description"
@@ -68,6 +68,146 @@
             app:layout_constraintVertical_bias="0.486"
             app:srcCompat="@drawable/baseline_library_add_24"
             android:contentDescription="@string/make_notes" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="15dp"
+            android:fontFamily="@font/open_sans"
+            android:text="@string/email_address"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/landingImage" />
+
+        <TextView
+            android:id="@+id/homeEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:fontFamily="@font/open_sans"
+            android:text="@string/email_address"
+            android:textColor="@color/black"
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView3" />
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="15dp"
+            android:fontFamily="@font/open_sans"
+            android:text="@string/user_id"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/homeEmail" />
+
+        <TextView
+            android:id="@+id/homeUserId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:fontFamily="@font/open_sans"
+            android:text="@string/user_id"
+            android:textColor="@color/black"
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView4" />
+
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="200dp"
+            android:layout_marginTop="15dp"
+            android:fontFamily="@font/open_sans"
+            android:text="@string/notes"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/landingImage" />
+
+        <TextView
+            android:id="@+id/notes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/open_sans"
+            android:text="0"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="@+id/textView5"
+            app:layout_constraintStart_toEndOf="@+id/textView5"
+            app:layout_constraintTop_toTopOf="@+id/textView5"
+            app:layout_constraintVertical_bias="1.0"
+            tools:ignore="HardcodedText" />
+
+        <TextView
+            android:id="@+id/textView6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="200dp"
+            android:layout_marginTop="58dp"
+            android:fontFamily="@font/open_sans"
+            android:text="@string/files"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/landingImage" />
+
+        <TextView
+            android:id="@+id/files"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/open_sans"
+            android:text="0"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="@+id/textView6"
+            app:layout_constraintStart_toEndOf="@+id/textView6"
+            app:layout_constraintTop_toTopOf="@+id/textView6"
+            app:layout_constraintVertical_bias="1.0"
+            tools:ignore="HardcodedText" />
+
+        <TextView
+            android:id="@+id/textView7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="200dp"
+            android:layout_marginTop="100dp"
+            android:fontFamily="@font/open_sans"
+            android:text="@string/question_cards"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/landingImage" />
+
+        <TextView
+            android:id="@+id/q_cards"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/open_sans"
+            android:text="0"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="@+id/textView7"
+            app:layout_constraintStart_toEndOf="@+id/textView7"
+            app:layout_constraintTop_toTopOf="@+id/textView7"
+            app:layout_constraintVertical_bias="1.0"
+            tools:ignore="HardcodedText" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

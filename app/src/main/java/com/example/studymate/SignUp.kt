@@ -23,6 +23,7 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import io.appwrite.services.Databases
 
 class SignUp : AppCompatActivity() {
 
@@ -69,13 +70,10 @@ class SignUp : AppCompatActivity() {
             else if(userPwd != userCPwd)
                 Toast.makeText(this, "The passwords do not match", Toast.LENGTH_SHORT).show()
             else {
-
                     registerUser(userEmail, userPwd)
-
             }
         }
     }
-
     private fun isValidEmail(target: String): Boolean {
         return !TextUtils.isEmpty(target) && Patterns.EMAIL_ADDRESS.matcher(target).matches()
     }
@@ -97,16 +95,12 @@ class SignUp : AppCompatActivity() {
                 )
                 // Handle successful registration
                 Toast.makeText(this@SignUp, "User registered successfully", Toast.LENGTH_SHORT).show()
-                intent = Intent(this@SignUp, HomePage::class.java)
+
                 if(signUpCheckBox.isChecked){
                     val editor: SharedPreferences.Editor = preferences.edit()
-                    editor.putString("Email", userEmail)
-                    editor.putString("Pwd", userPwd)
                     editor.putBoolean("CHECKBOX", true)
                     editor.apply()
                 }
-                startActivity(intent)
-                finish()
                 checkUser(userEmail, userPwd)
             } catch (e: Exception) {
                 // Handle registration failure
@@ -122,21 +116,39 @@ class SignUp : AppCompatActivity() {
             .setProject("64734c27ee025a6ee21c")
 
         val account = Account(client)
+        val database = Databases(client)
 
         GlobalScope.launch(Dispatchers.Main) {
             try {
+                intent = Intent(this@SignUp, HomePage::class.java)
                 val response = account.createEmailSession(
                     email = userEmail,
                     password = userPwd,
+                )
+                database.createDocument(
+                    databaseId = "648081c3025f25473245",
+                    collectionId = "6480820466d1d4790f90",
+                    documentId = response.userId,
+                    data = mapOf(
+                        "user-id" to response.userId,
+                        "session-id" to response.id,
+                        "email" to userEmail,
+                        "files" to 0,
+                        "notes" to 0,
+                        "q-cards" to 0
+                    )
                 )
                 // Handle successful login
                 val editor : SharedPreferences.Editor = preferences.edit()
                 editor.putString("sessionId", response.id)
                 editor.putString("userId", response.userId)
                 editor.apply()
+                startActivity(intent)
+                finish()
                 // Further flow for the logged-in user
             } catch (e: Exception) {
                 // Handle login failure
+                Toast.makeText(this@SignUp, "Could not login", Toast.LENGTH_SHORT).show()
             }
         }
     }
