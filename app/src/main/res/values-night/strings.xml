@@ -15,9 +15,11 @@
     <string name="make_notes">make notes</string>
     <string name="email_address">Email Address</string>
     <string name="user_id">User ID</string>
-    <string name="notes">Notes Created: </string>
-    <string name="files">Files Uploaded: </string>
-    <string name="question_cards">Question Cards: </string>
+    <string name="notes">Notes Created:   </string>
+    <string name="files">Files Uploaded:   </string>
+    <string name="question_cards">Question Cards:   </string>
     <string name="notes_created">Notes Created</string>
     <string name="view_update_notes">View or update your notes here</string>
+    <string name="question_cards_frag">Question Cards</string>
+    <string name="q_cards_des">Explore the question answering\nsystem built over your note</string>
 </resources>

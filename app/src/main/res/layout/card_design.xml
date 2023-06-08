@@ -3,14 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
-    <androidx.cardview.widget.CardView
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
-        android:background="@drawable/note_card_template"
         android:elevation="25dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -21,6 +20,7 @@
             android:orientation="vertical"
             android:paddingLeft="16dp"
             android:paddingTop="16dp"
+            android:background="@drawable/note_card_template"
             android:paddingRight="16dp"
             android:paddingBottom="16dp">
 
@@ -29,12 +29,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
-                android:text="Text"
-                android:textColor="@color/white"
+                android:text="Notename"
+                android:textColor="@color/black"
                 android:textColorHint="@color/white"
                 android:textCursorDrawable="@drawable/black_cursor"
-                android:textSize="17sp"
-                android:typeface="@font/open_sans"
+                android:textSize="28sp"
+                android:fontFamily="@font/montserrat"
                 tools:ignore="HardcodedText" />
 
             <TextView
@@ -42,16 +42,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
-                android:text="Text"
-                android:textColor="@color/white"
-                android:textColorHint="@color/white"
+                android:text="Date Created"
+                android:textColor="@color/black"
                 android:textCursorDrawable="@drawable/black_cursor"
                 android:textSize="17sp"
-                android:typeface="@font/open_sans"
+                android:fontFamily="@font/open_sans"
                 tools:ignore="HardcodedText" />
 
         </LinearLayout>
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

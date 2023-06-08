@@ -181,7 +181,11 @@ class CreateNotesFragment : Fragment() {
             readAndUpdateDatabase(shouldUpdate = false, isFileUpdate = false)
             if (noteName.text.isEmpty()) {
                 Toast.makeText(context, "Enter a Note Name to proceed", Toast.LENGTH_SHORT).show()
-            } else {
+            }
+            else if(sentencesList.isEmpty()){
+                Toast.makeText(context, "Enter some text", Toast.LENGTH_SHORT).show()
+            }
+            else {
 
                 CoroutineScope(Dispatchers.Main).launch {
                     val client = Client(requireContext())
