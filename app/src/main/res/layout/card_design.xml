@@ -14,7 +14,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -28,28 +28,51 @@
                 android:id="@+id/cardNoteName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="5dp"
                 android:background="@android:color/transparent"
+                android:fontFamily="@font/montserrat"
                 android:text="Notename"
                 android:textColor="@color/black"
                 android:textColorHint="@color/white"
                 android:textCursorDrawable="@drawable/black_cursor"
                 android:textSize="28sp"
-                android:fontFamily="@font/montserrat"
+                android:visibility="visible"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="HardcodedText" />
+
+            <TextView
+                android:id="@+id/dateCreatedText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:background="@android:color/transparent"
+                android:fontFamily="@font/open_sans"
+                android:text="Date Created: "
+                android:textColor="@color/black"
+                android:textCursorDrawable="@drawable/black_cursor"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cardNoteName"
                 tools:ignore="HardcodedText" />
 
             <TextView
                 android:id="@+id/cardDateCreated"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="110dp"
                 android:background="@android:color/transparent"
+                android:fontFamily="@font/open_sans"
                 android:text="Date Created"
                 android:textColor="@color/black"
                 android:textCursorDrawable="@drawable/black_cursor"
-                android:textSize="17sp"
-                android:fontFamily="@font/open_sans"
+                android:textSize="14sp"
+                app:layout_constraintStart_toEndOf="@+id/dateCreatedText"
+                app:layout_constraintTop_toBottomOf="@id/cardNoteName"
                 tools:ignore="HardcodedText" />
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
 
 

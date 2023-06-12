@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Study Mate</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="create_notes">Create Notes</string>
     <string name="create_your_notes_manually_or_use_nocr_to_extract_text_from_images">Create your notes manually, add\nfiles or use OCR to extract text \nfrom images.</string>
@@ -22,7 +21,7 @@
     <string name="question_cards">Question Cards:   </string>
     <string name="notes_created">Notes Created</string>
     <string name="view_update_notes">View or update your notes here</string>
-    <string name="question_cards_frag">Question Cards</string>
-    <string name="q_cards_des">Explore the question answering system\nbuilt over your note. Choose any note\nand start asking questions.</string>
+    <string name="question_cards_frag">Question\nCards</string>
+    <string name="q_cards_des">Use the note-based question\nanswering system. Select a note\nand ask questions.</string>
     <string name="question_answering_system">Question Answering System</string>
 </resources>

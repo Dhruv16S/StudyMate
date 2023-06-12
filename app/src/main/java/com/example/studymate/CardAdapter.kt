@@ -44,7 +44,6 @@ class CardAdapter(
             context.startActivity(intent)
             Toast.makeText(context, "Redirecting", Toast.LENGTH_SHORT).show()
         }
-
     }
 
     override fun getItemCount(): Int {

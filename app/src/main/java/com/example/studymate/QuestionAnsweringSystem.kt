@@ -1,8 +1,9 @@
 package com.example.studymate
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.SharedPreferences
 import android.content.res.Resources
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
@@ -10,16 +11,25 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import io.appwrite.Client
+import io.appwrite.ID
+import io.appwrite.extensions.toJson
 import io.appwrite.services.Databases
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-
+import org.tensorflow.lite.task.core.BaseOptions
+import org.tensorflow.lite.task.text.qa.BertQuestionAnswerer
+import org.tensorflow.lite.task.text.qa.BertQuestionAnswerer.BertQuestionAnswererOptions
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
+@OptIn(DelicateCoroutinesApi::class)
 class QuestionAnsweringSystem : AppCompatActivity() {
 
     private lateinit var noteName : TextView
@@ -28,6 +38,15 @@ class QuestionAnsweringSystem : AppCompatActivity() {
     private lateinit var question : EditText
     private lateinit var askQuestion : Button
     private lateinit var displayQuestions : LinearLayout
+    private lateinit var preferences: SharedPreferences
+    private lateinit var userId : String
+    private lateinit var sessionId : String
+    private lateinit var questionId : String
+    private var questionCount : Int = 0
+    private var count : Int = 0
+    private var questionAndAnswerList = mutableListOf<String>()
+    private var questionCardExists : Boolean = false
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,15 +58,87 @@ class QuestionAnsweringSystem : AppCompatActivity() {
         askQuestion = findViewById(R.id.askQuestion)
         displayQuestions = findViewById(R.id.displayQuestions)
 
+        preferences = getSharedPreferences("SHARED_PREF", Context.MODE_PRIVATE)
+        sessionId = preferences.getString("sessionId", " ").toString()
+        userId = preferences.getString("userId", " ").toString()
+
+        val client = Client(this@QuestionAnsweringSystem)
+            .setEndpoint("https://cloud.appwrite.io/v1")
+            .setProject("64734c27ee025a6ee21c")
+
+        val database = Databases(client)
+
+        GlobalScope.launch(Dispatchers.Main) {
+            try {
+                val response = database.listDocuments(
+                    databaseId = "6486eab49597787c39e3",
+                    collectionId = "6486eac01060479d4782",
+                )
+                val documents = response.documents
+                for (document in documents){
+                    if(document.data["note-id"].toString() == intent.getStringExtra("documentId")){
+                        questionCardExists = true
+                        questionId = document.id
+                        questionAndAnswerList = Json.decodeFromString<MutableList<String>?>(document.data["question-answer"]?.toJson()
+                            .toString())!!
+                        for (item in questionAndAnswerList){
+                            createQuestionCard(item.split("\n")[0], item.split("\n")[1])
+                        }
+                    }
+                }
+            }
+            // Further flow for the logged-in user
+            catch (e: Exception) {
+                // Handle login failure
+                Toast.makeText(this@QuestionAnsweringSystem, "Could not fetch data", Toast.LENGTH_SHORT).show()
+                Log.d("Error", "$e")
+            }
+        }
+
         getNoteData(object : NoteDataCallback {
             override fun onNoteDataLoaded() {
-                // textData has the entire content to be passed to BERT
-                // get question from user, send it to BERT.
-                // pass the content of question.text.toString() to BERT
-                // send both question and answer received from BERT to createQuestionCard
-                createQuestionCard("question", "answer")
+
+                readAndUpdateDatabase(shouldUpdate = false)
+
+                val options = BertQuestionAnswererOptions.builder()
+                    .setBaseOptions(BaseOptions.builder().setNumThreads(4).build())
+                    .build()
+                val answerer = BertQuestionAnswerer.createFromFileAndOptions(
+                    this@QuestionAnsweringSystem, "mobilebert.tflite", options
+                )
+                askQuestion.setOnClickListener{
+                    val answers = answerer.answer(
+                        textData,
+                        question.text.toString()
+                    )
+                    if (answers.isNotEmpty()) {
+                        val highestConfidenceAnswer = answers.first()
+                        var highestConfidenceAnswerText = highestConfidenceAnswer.text
+                        val words = highestConfidenceAnswerText.split(" ")
+                        val capitalizedWords = words.map { it.capitalize() }
+                        highestConfidenceAnswerText = capitalizedWords.joinToString(" ")
+                        createQuestionCard(question.text.toString(), highestConfidenceAnswerText)
+                        questionAndAnswerList.add(question.text.toString() + "\n" + highestConfidenceAnswerText)
+                        count += 1
+                        question.setText("")
+                    } else {
+                        Toast.makeText(
+                            this@QuestionAnsweringSystem,
+                            "Could not find the answer",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
             }
         })
+    }
+
+    override fun onBackPressed() {
+        // Check if the user went back
+        // Perform your desired action here
+        updateQuestionCards(questionCardExists = questionCardExists)
+        Toast.makeText(this@QuestionAnsweringSystem, "Questions Saved!", Toast.LENGTH_SHORT).show()
+        super.onBackPressed()
     }
 
     interface NoteDataCallback {
@@ -100,28 +191,108 @@ class QuestionAnsweringSystem : AppCompatActivity() {
 
         // Create the question
         val questionTextView = TextView(this)
-        questionTextView.text = questionContent
-        questionTextView.typeface = ResourcesCompat.getFont(this, R.font.open_sans)
+        questionTextView.text = questionContent + "\n"
+        questionTextView.typeface = ResourcesCompat.getFont(this, R.font.open_sans_bold)
         questionTextView.setTextColor(ContextCompat.getColor(this, R.color.black))
         questionTextView.textSize = 18.0f
+
         linearLayout.addView(questionTextView)
 
         // Create the question
         val answerTextView = TextView(this)
         answerTextView.text = answerContent
-        answerTextView.typeface = ResourcesCompat.getFont(this, R.font.open_sans)
+        answerTextView.typeface = ResourcesCompat.getFont(this, R.font.montserrat)
         answerTextView.setTextColor(ContextCompat.getColor(this, R.color.black))
-        answerTextView.textSize = 18.0f
+        answerTextView.textSize = 16.0f
         linearLayout.addView(answerTextView)
         cardView.addView(linearLayout)
 
         // Add the CardView to the parent LinearLayout (displayNotes)
         displayQuestions.addView(cardView)
-        question.setText("")
     }
 
     private fun Double.dpToPx(): Int {
         val scale = Resources.getSystem().displayMetrics.density
         return (this * scale + 0.5f).toInt()
+    }
+    @OptIn(DelicateCoroutinesApi::class)
+    private fun readAndUpdateDatabase(shouldUpdate :  Boolean) {
+        val client = Client(this)
+            .setEndpoint("https://cloud.appwrite.io/v1")
+            .setProject("64734c27ee025a6ee21c")
+
+        val database = Databases(client)
+
+        GlobalScope.launch(Dispatchers.Main) {
+            try {
+                if(!shouldUpdate){
+                    val response = database.getDocument(
+                        databaseId = "648081c3025f25473245",
+                        collectionId = "6480820466d1d4790f90",
+                        documentId = userId,
+                    )
+                    questionCount = (response.data["q-cards"] as Long).toInt()
+                }
+                else{
+                    questionCount += count
+                    questionAndAnswerList = mutableListOf()
+                    database.updateDocument(
+                        databaseId = "648081c3025f25473245",
+                        collectionId = "6480820466d1d4790f90",
+                        documentId = userId,
+                        data = mapOf(
+                            "q-cards" to questionCount,
+                        )
+                    )
+                }
+                // Further flow for the logged-in user
+            } catch (e: Exception) {
+                // Handle login failure
+                Toast.makeText(this@QuestionAnsweringSystem, "Could not fetch data", Toast.LENGTH_SHORT).show()
+                Log.d("Error", "$e")
+            }
+        }
+    }
+
+    private fun updateQuestionCards(questionCardExists : Boolean){
+        CoroutineScope(Dispatchers.Main).launch {
+            val client = Client(this@QuestionAnsweringSystem)
+                .setEndpoint("https://cloud.appwrite.io/v1")
+                .setProject("64734c27ee025a6ee21c")
+            val databases = Databases(client)
+            try {
+                if(questionCardExists){
+                    databases.updateDocument(
+                        databaseId = "6486eab49597787c39e3",
+                        collectionId = "6486eac01060479d4782",
+                        documentId = questionId,
+                        data = mapOf(
+                            "question-answer" to questionAndAnswerList,
+                        )
+                    )
+                }
+                else{
+                    databases.createDocument(
+                        databaseId = "6486eab49597787c39e3",
+                        collectionId = "6486eac01060479d4782",
+                        documentId = ID.unique(),
+                        data = mapOf(
+                            "session-id" to sessionId,
+                            "user-id" to userId,
+                            "question-answer" to questionAndAnswerList,
+                            "note-id" to intent.getStringExtra("documentId")
+                        )
+                    )
+                }
+                Toast.makeText(
+                    this@QuestionAnsweringSystem,
+                    "Questions Saved!",
+                    Toast.LENGTH_SHORT
+                ).show()
+                readAndUpdateDatabase(shouldUpdate = true)
+            } catch (e: Exception) {
+                Log.e("Appwrite", "Error: " + e.message)
+            }
+        }
     }
 }
