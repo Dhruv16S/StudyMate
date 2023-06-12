@@ -2,24 +2,27 @@ package com.example.studymate
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.cardview.widget.CardView
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 
 class CardAdapter(
     noteNameList: ArrayList<String>,
     dateCreatedList: ArrayList<String>,
     documentIdList: ArrayList<String>,
+    frag : String,
     var context: Context
 ) : RecyclerView.Adapter<CardAdapter.CountryViewHolder>() {
     private var noteName = noteNameList
     private var dateCreated = dateCreatedList
     private var documentId = documentIdList
-
+    private var frag = frag
     class CountryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
         var noteName : TextView = itemView.findViewById(R.id.cardNoteName)
         var dateCreated : TextView = itemView.findViewById(R.id.cardDateCreated)
@@ -39,10 +42,16 @@ class CardAdapter(
 
         //card view is defined here, so toast is also specified here
         holder.cardView.setOnClickListener{
-            val intent = Intent(context, QuestionAnsweringSystem :: class.java)
-            intent.putExtra("documentId",documentId[position])
-            context.startActivity(intent)
-            Toast.makeText(context, "Redirecting", Toast.LENGTH_SHORT).show()
+            if(frag == "questions") {
+                val intent = Intent(context, QuestionAnsweringSystem::class.java)
+                intent.putExtra("documentId", documentId[position])
+                context.startActivity(intent)
+            }
+            else{
+                val intent = Intent(context, ViewNotes::class.java)
+                intent.putExtra("documentId", documentId[position])
+                context.startActivity(intent)
+            }
         }
     }
 

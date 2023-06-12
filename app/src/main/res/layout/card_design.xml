@@ -7,20 +7,22 @@
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardView"
-        android:layout_width="match_parent"
+        android:layout_width="390dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:elevation="25dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/note_card_template"
             android:orientation="vertical"
             android:paddingLeft="16dp"
             android:paddingTop="16dp"
-            android:background="@drawable/note_card_template"
             android:paddingRight="16dp"
             android:paddingBottom="16dp">
 

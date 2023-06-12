@@ -55,7 +55,8 @@ class NotesFragment : Fragment() {
                         documentId.add(document.id)
                     }
                 }
-                adapter = CardAdapter(noteName, dateCreated, documentId, requireActivity())
+                val frag = "notes"
+                adapter = CardAdapter(noteName, dateCreated, documentId, frag, requireActivity())
                 recyclerView.adapter = adapter
             }
             // Further flow for the logged-in user
