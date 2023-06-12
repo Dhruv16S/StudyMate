@@ -107,26 +107,39 @@ class QuestionAnsweringSystem : AppCompatActivity() {
                     this@QuestionAnsweringSystem, "mobilebert.tflite", options
                 )
                 askQuestion.setOnClickListener{
-                    val answers = answerer.answer(
-                        textData,
-                        question.text.toString()
-                    )
-                    if (answers.isNotEmpty()) {
-                        val highestConfidenceAnswer = answers.first()
-                        var highestConfidenceAnswerText = highestConfidenceAnswer.text
-                        val words = highestConfidenceAnswerText.split(" ")
-                        val capitalizedWords = words.map { it.capitalize() }
-                        highestConfidenceAnswerText = capitalizedWords.joinToString(" ")
-                        createQuestionCard(question.text.toString(), highestConfidenceAnswerText)
-                        questionAndAnswerList.add(question.text.toString() + "\n" + highestConfidenceAnswerText)
-                        count += 1
-                        question.setText("")
-                    } else {
+
+                    if(question.text.isEmpty()){
                         Toast.makeText(
                             this@QuestionAnsweringSystem,
-                            "Could not find the answer",
+                            "Enter a valid question",
                             Toast.LENGTH_SHORT
                         ).show()
+                    }
+                    else{
+                        val answers = answerer.answer(
+                            textData,
+                            question.text.toString()
+                        )
+                        if (answers.isNotEmpty()) {
+                            val highestConfidenceAnswer = answers.first()
+                            var highestConfidenceAnswerText = highestConfidenceAnswer.text
+                            val words = highestConfidenceAnswerText.split(" ")
+                            val capitalizedWords = words.map { it.capitalize() }
+                            highestConfidenceAnswerText = capitalizedWords.joinToString(" ")
+                            createQuestionCard(
+                                question.text.toString(),
+                                highestConfidenceAnswerText
+                            )
+                            questionAndAnswerList.add(question.text.toString() + "\n" + highestConfidenceAnswerText)
+                            count += 1
+                            question.setText("")
+                        } else {
+                            Toast.makeText(
+                                this@QuestionAnsweringSystem,
+                                "Could not find the answer",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     }
                 }
             }

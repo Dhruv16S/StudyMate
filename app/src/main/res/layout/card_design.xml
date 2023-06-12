@@ -51,7 +51,7 @@
                 android:layout_marginStart="10dp"
                 android:background="@android:color/transparent"
                 android:fontFamily="@font/open_sans"
-                android:text="Date Created: "
+                android:text="Date: "
                 android:textColor="@color/black"
                 android:textCursorDrawable="@drawable/black_cursor"
                 android:textSize="14sp"
@@ -63,7 +63,7 @@
                 android:id="@+id/cardDateCreated"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="110dp"
+                android:layout_marginStart="50dp"
                 android:background="@android:color/transparent"
                 android:fontFamily="@font/open_sans"
                 android:text="Date Created"
@@ -73,6 +73,24 @@
                 app:layout_constraintStart_toEndOf="@+id/dateCreatedText"
                 app:layout_constraintTop_toBottomOf="@id/cardNoteName"
                 tools:ignore="HardcodedText" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/share"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/button_template"
+                android:backgroundTint="@color/light_blue"
+                android:drawableStart="@drawable/share_icon"
+                android:drawablePadding="8dp"
+                android:fontFamily="@font/open_sans"
+                android:padding="10dp"
+                android:textAllCaps="true"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>

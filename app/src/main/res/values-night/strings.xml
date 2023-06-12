@@ -19,7 +19,7 @@
     <string name="notes">Notes Created:   </string>
     <string name="files">Files Uploaded:   </string>
     <string name="question_cards">Question Cards:   </string>
-    <string name="notes_created">Notes Created</string>
+    <string name="view_notes">View Notes</string>
     <string name="view_update_notes">View or update your notes here</string>
     <string name="question_cards_frag">Question\nCards</string>
     <string name="q_cards_des">Use the note-based question\nanswering system. Select a note\nand ask questions.</string>

@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.appwrite.Client
 import io.appwrite.services.Databases
+import io.appwrite.services.Realtime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -39,6 +40,12 @@ class NotesFragment : Fragment() {
             .setProject("64734c27ee025a6ee21c")
 
         val database = Databases(client)
+        val realtime = Realtime(client)
+
+        val path = "documents"
+        realtime.subscribe(path) {
+            Log.d("log", it.payload.toString() )
+        }
 
         GlobalScope.launch(Dispatchers.Main) {
             try {

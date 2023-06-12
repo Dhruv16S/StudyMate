@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.cardview.widget.CardView
@@ -27,6 +28,7 @@ class CardAdapter(
         var noteName : TextView = itemView.findViewById(R.id.cardNoteName)
         var dateCreated : TextView = itemView.findViewById(R.id.cardDateCreated)
         var cardView : CardView = itemView.findViewById(R.id.cardView)
+        var shareButton : Button = itemView.findViewById(R.id.share)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CountryViewHolder {
@@ -41,6 +43,12 @@ class CardAdapter(
         holder.dateCreated.text = dateCreated[position]
 
         //card view is defined here, so toast is also specified here
+        holder.shareButton.setOnClickListener {
+            val intent = Intent(context, ShareActivity::class.java)
+            intent.putExtra("documentId", documentId[position])
+            context.startActivity(intent)
+        }
+
         holder.cardView.setOnClickListener{
             if(frag == "questions") {
                 val intent = Intent(context, QuestionAnsweringSystem::class.java)
