@@ -25,7 +25,7 @@ class QCardsFragment : Fragment() {
     private lateinit var userId : String
     private var noteName = ArrayList<String>()
     private var dateCreated = ArrayList<String>()
-    private var noteText = ArrayList<String>()
+    private var documentId = ArrayList<String>()
     //to store details and name
     private lateinit var adapter: CardAdapter
     private lateinit var preferences: SharedPreferences
@@ -60,10 +60,10 @@ class QCardsFragment : Fragment() {
                     if(document.data["user-id"].toString() == userId){
                         noteName.add(document.data["note-name"].toString())
                         dateCreated.add(document.data["date-created"].toString())
-                        noteText.add(document.data["note-text"].toString())
+                        documentId.add(document.id)
                     }
                 }
-                adapter = CardAdapter(noteName, dateCreated, requireActivity())
+                adapter = CardAdapter(noteName, dateCreated, documentId, requireActivity())
                 recyclerView.adapter = adapter
             }
             // Further flow for the logged-in user

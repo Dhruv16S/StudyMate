@@ -301,9 +301,9 @@ class CreateNotesFragment : Fragment() {
             textView.text = "File ${count}: $toBeAdded"
         else
             textView.text = "Note ${count}:"
-        textView.typeface = ResourcesCompat.getFont(requireContext(), R.font.montserrat)
+        textView.typeface = ResourcesCompat.getFont(requireContext(), R.font.open_sans)
         textView.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
-        textView.textSize = 16.0f
+        textView.textSize = 18.0f
 
         // Add the TextView to the LinearLayout
         linearLayout.addView(textView)
@@ -316,14 +316,14 @@ class CreateNotesFragment : Fragment() {
             )
 
             editText.layoutParams = editTextLayoutParams
-            editText.typeface = ResourcesCompat.getFont(requireContext(), R.font.open_sans)
+            editText.typeface = ResourcesCompat.getFont(requireContext(), R.font.montserrat)
             editText.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
             editText.setHintTextColor(ContextCompat.getColor(requireContext(), R.color.white))
             editText.setBackgroundResource(0) // Removes the line associated with the EditText
             editText.setTextCursorDrawable(R.drawable.black_cursor)
             editText.setText(toBeAdded)
             editText.tag = "noteEditText"
-            editText.textSize = 17.0f
+            editText.textSize = 16.0f
 
             // Add the EditText to the LinearLayout
             linearLayout.addView(editText)

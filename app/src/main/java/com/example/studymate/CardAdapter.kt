@@ -1,6 +1,7 @@
 package com.example.studymate
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,12 +11,14 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 
 class CardAdapter(
-    countryNameList: ArrayList<String>,
-    detailsList: ArrayList<String>,
+    noteNameList: ArrayList<String>,
+    dateCreatedList: ArrayList<String>,
+    documentIdList: ArrayList<String>,
     var context: Context
 ) : RecyclerView.Adapter<CardAdapter.CountryViewHolder>() {
-    private var noteName = countryNameList
-    private var dateCreated = detailsList
+    private var noteName = noteNameList
+    private var dateCreated = dateCreatedList
+    private var documentId = documentIdList
 
     class CountryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
         var noteName : TextView = itemView.findViewById(R.id.cardNoteName)
@@ -27,7 +30,6 @@ class CardAdapter(
         //define the card design we made aka which design is displayed
         val view : View = LayoutInflater.from(parent.context).inflate(R.layout.card_design, parent, false)
         return CountryViewHolder(view)
-
     }
 
     override fun onBindViewHolder(holder: CountryViewHolder, position: Int){
@@ -37,8 +39,10 @@ class CardAdapter(
 
         //card view is defined here, so toast is also specified here
         holder.cardView.setOnClickListener{
-
-            Toast.makeText(context, "You selected ${noteName[position]}", Toast.LENGTH_SHORT).show()
+            val intent = Intent(context, QuestionAnsweringSystem :: class.java)
+            intent.putExtra("documentId",documentId[position])
+            context.startActivity(intent)
+            Toast.makeText(context, "Redirecting", Toast.LENGTH_SHORT).show()
         }
 
     }
@@ -47,5 +51,4 @@ class CardAdapter(
         //amount of data to be displayed
         return noteName.size
     }
-
 }

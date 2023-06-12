@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".QuestionAnsweringSystem"
+    android:background="@drawable/home_page">
+
+    <TextView
+        android:id="@+id/qAndaTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="30dp"
+        android:fontFamily="@font/open_sans"
+        android:text="@string/question_answering_system"
+        android:textColor="@color/black"
+        android:textSize="38sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="TextContrastCheck,VisualLintBounds" />
+
+    <TextView
+        android:id="@+id/qAndaDesc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/open_sans"
+        android:layout_marginStart="20dp"
+        android:text="Receive answers from the note you created"
+        android:textColor="@color/black"
+        android:textSize="13sp"
+        android:textStyle="italic"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/qAndaTitle"
+        tools:ignore="HardcodedText,TextContrastCheck" />
+
+    <TextView
+        android:id="@+id/qAndaDesc2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/open_sans"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="3dp"
+        android:text="Answering for the note titled: "
+        android:textColor="@color/black"
+        android:textSize="13sp"
+        android:textStyle="italic"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/qAndaDesc"
+        tools:ignore="HardcodedText,TextContrastCheck" />
+
+    <TextView
+        android:id="@+id/qAndaNoteName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/montserrat"
+        android:layout_marginStart="5dp"
+        android:text="Note Name"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@id/qAndaDesc2"
+        app:layout_constraintTop_toBottomOf="@+id/qAndaDesc"
+        tools:ignore="HardcodedText,TextContrastCheck" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="190dp"
+        android:layout_marginBottom="70dp"
+        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="SpeakableTextPresentCheck">
+
+        <LinearLayout
+            android:id="@+id/displayQuestions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+        </LinearLayout>
+    </ScrollView>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/containsQuestionFields"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:background="@drawable/rounded_layout"
+        android:elevation="5dp">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayoutQuestion"
+            android:layout_width="270dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginBottom="5dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/questionContent"
+                android:layout_width="270dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/open_sans"
+                android:hint="Enter question here: "
+                android:inputType="text"
+                android:lines="4"
+                android:maxLines="10"
+                android:minHeight="50dp"
+                android:scrollbars="vertical"
+                android:textAllCaps="true"
+                android:textColor="@color/black"
+                android:textColorHint="#546E7A"
+                android:textCursorDrawable="@drawable/black_cursor"
+                android:textSize="14sp"
+                tools:ignore="HardcodedText,TextContrastCheck" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/askQuestion"
+            android:layout_width="105dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/button_template"
+            android:backgroundTint="@color/light_blue"
+            android:drawableStart="@drawable/baseline_question_answer"
+            android:drawablePadding="8dp"
+            android:fontFamily="@font/open_sans"
+            android:padding="10dp"
+            android:text="Enter"
+            android:textAllCaps="true"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/textInputLayoutQuestion"
+            tools:ignore="HardcodedText" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -23,5 +23,6 @@
     <string name="notes_created">Notes Created</string>
     <string name="view_update_notes">View or update your notes here</string>
     <string name="question_cards_frag">Question Cards</string>
-    <string name="q_cards_des">Explore the question answering\nsystem built over your note</string>
+    <string name="q_cards_des">Explore the question answering system\nbuilt over your note. Choose any note\nand start asking questions.</string>
+    <string name="question_answering_system">Question Answering System</string>
 </resources>

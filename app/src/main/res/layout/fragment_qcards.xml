@@ -30,13 +30,13 @@
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
+            android:layout_marginStart="120dp"
             android:fontFamily="@font/open_sans"
             android:text="@string/q_cards_des"
             android:textColor="@color/black"
             android:textSize="15.5sp"
             android:textStyle="italic"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/createNotes"
             tools:ignore="TextContrastCheck" />
 
