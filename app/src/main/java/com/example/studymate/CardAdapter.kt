@@ -17,12 +17,14 @@ class CardAdapter(
     noteNameList: ArrayList<String>,
     dateCreatedList: ArrayList<String>,
     documentIdList: ArrayList<String>,
+    userId : String,
     frag : String,
     var context: Context
 ) : RecyclerView.Adapter<CardAdapter.CountryViewHolder>() {
     private var noteName = noteNameList
     private var dateCreated = dateCreatedList
     private var documentId = documentIdList
+    private var userId = userId
     private var frag = frag
     class CountryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
         var noteName : TextView = itemView.findViewById(R.id.cardNoteName)
@@ -46,6 +48,8 @@ class CardAdapter(
         holder.shareButton.setOnClickListener {
             val intent = Intent(context, ShareActivity::class.java)
             intent.putExtra("documentId", documentId[position])
+            intent.putExtra("noteName", noteName[position])
+            intent.putExtra("userId", userId)
             context.startActivity(intent)
         }
 

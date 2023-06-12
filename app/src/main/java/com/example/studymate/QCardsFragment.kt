@@ -64,7 +64,7 @@ class QCardsFragment : Fragment() {
                     }
                 }
                 val frag = "questions"
-                adapter = CardAdapter(noteName, dateCreated, documentId, frag, requireActivity())
+                adapter = CardAdapter(noteName, dateCreated, documentId, userId, frag, requireActivity())
                 recyclerView.adapter = adapter
             }
             // Further flow for the logged-in user

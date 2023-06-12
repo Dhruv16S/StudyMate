@@ -15,20 +15,19 @@
             android:id="@+id/landingImage"
             android:layout_width="261dp"
             android:layout_height="277dp"
+            android:layout_marginTop="100dp"
             android:contentDescription="@string/landing_page"
             android:src="@drawable/learning_logo"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.893"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.07" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/welcome"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="172dp"
+            android:layout_marginBottom="150dp"
             android:fontFamily="@font/open_sans"
             android:text="@string/welcome_back"
             android:textColor="#000000"
@@ -209,6 +208,26 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/textView7"
             app:layout_constraintVertical_bias="1.0"
+            tools:ignore="HardcodedText" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/logout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="35dp"
+            android:layout_marginEnd="35dp"
+            android:background="@drawable/button_template"
+            android:backgroundTint="@color/light_blue"
+            android:drawableStart="@drawable/logout_icon"
+            android:drawablePadding="8dp"
+            android:fontFamily="@font/open_sans"
+            android:padding="10dp"
+            android:text="Logout"
+            android:textAllCaps="true"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             tools:ignore="HardcodedText" />
 
 
