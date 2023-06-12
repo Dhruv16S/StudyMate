@@ -78,28 +78,43 @@ class ShareActivity : AppCompatActivity() {
                         )
                         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
                         val currentDate = Date()
+
+                        //adding to created-notes
                         database.createDocument(
-                                databaseId = "6479d563804822fc79bb",
-                                collectionId = "64872e58aa0f73e281e0",
-                                documentId = ID.unique(),
-                                data = mapOf(
-                                    "sender" to senderUserId,
-                                    "receiver" to receiverUserId,
-                                    "note-name" to noteDoc.data["note-name"],
-                                    "note-text" to noteDoc.data["note-text"],
-                                    "date-shared" to dateFormat.format(currentDate)
-                                )
+                            databaseId = "6479d563804822fc79bb",
+                            collectionId = "6479f9af8834a056c20d",
+                            documentId = ID.unique(),
+                            data = mapOf(
+                                "session-id" to senderUserId,
+                                "user-id" to receiverUserId,
+                                "note-name" to noteDoc.data["note-name"],
+                                "note-text" to noteDoc.data["note-text"],
+                                "date-created" to "Shared on: " + dateFormat.format(currentDate)
+                            )
+                        )
+                        //adding to shared-notes
+                        database.createDocument(
+                            databaseId = "6479d563804822fc79bb",
+                            collectionId = "64872e58aa0f73e281e0",
+                            documentId = ID.unique(),
+                            data = mapOf(
+                                "sender" to senderUserId,
+                                "receiver" to receiverUserId,
+                                "note-name" to noteDoc.data["note-name"],
+                                "note-text" to noteDoc.data["note-text"],
+                                "date-shared" to dateFormat.format(currentDate)
+                            )
                         )
                         Toast.makeText(
-                                this@ShareActivity,
-                                "Note shared with ${receiverEmailAddress.text}",
-                                Toast.LENGTH_SHORT
+                            this@ShareActivity,
+                            "Note shared with ${receiverEmailAddress.text}",
+                            Toast.LENGTH_SHORT
                         ).show()
                         finish()
-                    } catch (e: Exception) {
+                    }catch (e:Exception){
                         Toast.makeText(
                             this@ShareActivity,
-                            "That user does not exist",
+                            "Could not share note",
                             Toast.LENGTH_SHORT
                         ).show()
                         finish()

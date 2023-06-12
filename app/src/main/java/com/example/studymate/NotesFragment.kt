@@ -71,46 +71,6 @@ class NotesFragment : Fragment() {
             Log.d("log", it.payload.toJson())
             if(receiver == userId){
                 sendNotification(requireContext(), "StudyMate", "You received a note")
-                GlobalScope.launch(Dispatchers.Main) {
-                    try {
-                        val response = database.listDocuments(
-                            databaseId = "6479d563804822fc79bb",
-                            collectionId = "6479f9af8834a056c20d",
-                        )
-                        val documents = response.documents
-                        for (document in documents){
-                            if(document.data["user-id"].toString() == userId){
-                                noteName.add(document.data["note-name"].toString())
-                                dateCreated.add(document.data["date-created"].toString())
-                                documentId.add(document.id)
-                            }
-                        }
-
-                        // for the shared documents
-                        val shared = database.listDocuments(
-                            databaseId = "6479d563804822fc79bb",
-                            collectionId = "64872e58aa0f73e281e0",
-                        )
-                        val sharedDocuments = shared.documents
-                        for (document in sharedDocuments){
-                            if(document.data["user-id"].toString() == userId){
-                                noteName.add(document.data["note-name"].toString())
-                                dateCreated.add(document.data["date-created"].toString())
-                                documentId.add(document.id)
-                            }
-                        }
-                        val frag = "notes"
-                        adapter = CardAdapter(noteName, dateCreated, documentId, userId, frag, requireActivity())
-                        recyclerView.adapter = adapter
-                    }
-                    // Further flow for the logged-in user
-                    catch (e: Exception) {
-                        // Handle login failure
-                        Toast.makeText(context, "Could not fetch data", Toast.LENGTH_SHORT).show()
-                        Log.d("Error", "$e")
-                    }
-                }
-
             }
         }
 
