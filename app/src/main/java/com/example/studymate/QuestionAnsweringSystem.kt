@@ -29,6 +29,8 @@ import org.tensorflow.lite.task.text.qa.BertQuestionAnswerer
 import org.tensorflow.lite.task.text.qa.BertQuestionAnswerer.BertQuestionAnswererOptions
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import java.util.Locale
+
 @OptIn(DelicateCoroutinesApi::class)
 class QuestionAnsweringSystem : AppCompatActivity() {
 
@@ -79,7 +81,7 @@ class QuestionAnsweringSystem : AppCompatActivity() {
                     if(document.data["note-id"].toString() == intent.getStringExtra("documentId")){
                         questionCardExists = true
                         questionId = document.id
-                        questionAndAnswerList = Json.decodeFromString<MutableList<String>?>(document.data["question-answer"]?.toJson()
+                        questionAndAnswerList = Json.decodeFromString(document.data["question-answer"]?.toJson()
                             .toString())!!
                         for (item in questionAndAnswerList){
                             createQuestionCard(item.split("\n")[0], item.split("\n")[1])
@@ -124,7 +126,12 @@ class QuestionAnsweringSystem : AppCompatActivity() {
                             val highestConfidenceAnswer = answers.first()
                             var highestConfidenceAnswerText = highestConfidenceAnswer.text
                             val words = highestConfidenceAnswerText.split(" ")
-                            val capitalizedWords = words.map { it.capitalize() }
+                            @Suppress("NAME_SHADOWING") val capitalizedWords = words.map { it ->
+                                it.replaceFirstChar {
+                                if (it.isLowerCase()) it.titlecase(
+                                    Locale.getDefault()
+                                ) else it.toString()
+                            } }
                             highestConfidenceAnswerText = capitalizedWords.joinToString(" ")
                             createQuestionCard(
                                 question.text.toString(),
@@ -146,6 +153,8 @@ class QuestionAnsweringSystem : AppCompatActivity() {
         })
     }
 
+    @Suppress("DEPRECATION")
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         // Check if the user went back
         // Perform your desired action here

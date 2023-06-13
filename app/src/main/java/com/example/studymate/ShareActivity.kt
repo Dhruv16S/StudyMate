@@ -15,10 +15,12 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import android.content.SharedPreferences
 import io.appwrite.ID
+import kotlinx.coroutines.DelicateCoroutinesApi
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+@OptIn(DelicateCoroutinesApi::class)
 class ShareActivity : AppCompatActivity() {
 
     private lateinit var receiverEmailAddress : EditText

@@ -53,7 +53,6 @@ class MainActivity : AppCompatActivity() {
 
         if(remember){
             val intent = Intent(this@MainActivity, HomePage::class.java)
-            val editor : SharedPreferences.Editor = preferences.edit()
             startActivity(intent)
             finish()
         }

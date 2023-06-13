@@ -132,7 +132,7 @@
             android:layout_marginEnd="10dp"
             android:background="@drawable/button_template"
             android:backgroundTint="@color/light_blue"
-            android:drawableStart="@drawable/baseline_question_answer"
+            android:drawableStart="@drawable/question_answer_icon"
             android:drawablePadding="8dp"
             android:fontFamily="@font/open_sans"
             android:padding="10dp"

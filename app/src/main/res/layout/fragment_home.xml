@@ -17,7 +17,7 @@
             android:layout_height="277dp"
             android:layout_marginTop="100dp"
             android:contentDescription="@string/landing_page"
-            android:src="@drawable/learning_logo"
+            android:src="@drawable/home_page_image"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.893"
             app:layout_constraintStart_toStartOf="parent"
@@ -65,7 +65,7 @@
             app:layout_constraintStart_toEndOf="@+id/description"
             app:layout_constraintTop_toTopOf="@+id/description"
             app:layout_constraintVertical_bias="0.486"
-            app:srcCompat="@drawable/baseline_library_add_24"
+            app:srcCompat="@drawable/add_icon"
             android:contentDescription="@string/make_notes" />
 
         <TextView

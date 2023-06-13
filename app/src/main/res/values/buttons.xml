@@ -4,12 +4,12 @@
     <!-- icons array-->
     <dimen name="design_fab_image_size" tools:override="true">1dp</dimen>
     <array name="icons">
-        <item>@drawable/baseline_home</item>
-        <item>@drawable/save_note_black</item>
-        <item>@drawable/baseline_text_snippet</item>
-        <item>@drawable/baseline_question_answer</item>
-        <item>@drawable/baseline_question_answer</item>
-        <item>@drawable/baseline_text_snippet</item>
+        <item>@drawable/home_icon</item>
+        <item>@drawable/save_note_black_icon</item>
+        <item>@drawable/notes_icon</item>
+        <item>@drawable/question_answer_icon</item>
+        <item>@drawable/question_answer_icon</item>
+        <item>@drawable/notes_icon</item>
     </array>
     <!-- icons colors-->
     <array name="colors">

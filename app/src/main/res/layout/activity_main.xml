@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity"
-    android:background="@drawable/concentric_circles">
+    android:background="@drawable/login_signup_bg">
 
     <TextView
         android:id="@+id/textTagline"
@@ -18,7 +18,8 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+        app:layout_constraintTop_toBottomOf="@+id/imageView"
+        tools:ignore="HardcodedText" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayoutUsername"
@@ -38,7 +39,8 @@
             android:inputType="textEmailAddress"
             android:fontFamily="@font/open_sans"
             android:textColor="@color/black"
-            android:textSize="14sp"/>
+            android:textSize="14sp"
+            tools:ignore="HardcodedText" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -61,7 +63,8 @@
             android:inputType="textPassword"
             android:fontFamily="@font/open_sans"
             android:textColor="@color/black"
-            android:textSize="14sp"/>
+            android:textSize="14sp"
+            tools:ignore="HardcodedText" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -73,7 +76,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/studymate_logos_white"/>
+        app:srcCompat="@drawable/studymate_logos_white"
+        android:importantForAccessibility="no" />
 
     <TextView
         android:id="@+id/signUpHere"
@@ -87,7 +91,8 @@
         app:layout_constraintBottom_toTopOf="@+id/textInputLayoutUsername"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.221"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="HardcodedText" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/login"
@@ -105,7 +110,8 @@
         app:layout_constraintHorizontal_bias="0.173"
         android:backgroundTint="@color/mid_blue"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutPassword" />
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutPassword"
+        tools:ignore="HardcodedText" />
 
     <CheckBox
         android:id="@+id/loginRemember"
@@ -120,6 +126,7 @@
         app:layout_constraintHorizontal_bias="0.02"
         app:layout_constraintStart_toEndOf="@+id/login"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayoutPassword"
-        android:textColor="@color/black" />
+        android:textColor="@color/black"
+        tools:ignore="HardcodedText" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

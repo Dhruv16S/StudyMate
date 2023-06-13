@@ -24,4 +24,10 @@
     <string name="question_cards_frag">Question\nCards</string>
     <string name="q_cards_des">Use the note-based question\nanswering system. Select a note\nand ask questions.</string>
     <string name="question_answering_system">Question Answering System</string>
+    <string name="signup_text">Register now to enjoy the perks of\nAutomated Learning and\nPeer Reviews.</string>
+    <string name="email_address_hint">Email address</string>
+    <string name="password">Password</string>
+    <string name="signup">SignUp</string>
+    <string name="login">Login</string>
+    <string name="remember_me">Remember Me</string>
 </resources>

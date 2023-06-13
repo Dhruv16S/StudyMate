@@ -5,14 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".SignUp"
-    android:background="@drawable/concentric_circles">
+    android:background="@drawable/login_signup_bg">
 
     <TextView
         android:id="@+id/signUptextTagline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/open_sans"
-        android:text="Register now to enjoy the perks of\nAutomated Learning and\nPeer Reviews."
+        android:text="@string/signup_text"
         android:textColor="@color/white"
         android:textSize="19sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -34,10 +34,10 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fontFamily="@font/open_sans"
-            android:hint="Email address"
+            android:hint="@string/email_address_hint"
             android:inputType="textEmailAddress"
             android:textColor="@color/black"
-            android:textSize="14dp" />
+            android:textSize="14sp" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -56,11 +56,11 @@
             android:id="@+id/signUpeditTextPassword"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:hint="Password"
+            android:hint="@string/password"
             android:inputType="textPassword"
             android:fontFamily="@font/open_sans"
             android:textColor="@color/black"
-            android:textSize="14dp" />
+            android:textSize="14sp" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <!-- Confirm Password TextInputLayout -->
@@ -82,7 +82,8 @@
             android:inputType="textPassword"
             android:fontFamily="@font/open_sans"
             android:textColor="@color/black"
-            android:textSize="14dp"/>
+            android:textSize="14sp"
+            tools:ignore="HardcodedText" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <ImageView
@@ -93,7 +94,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/studymate_logos_white"/>
+        app:srcCompat="@drawable/studymate_logos_white"
+        android:importantForAccessibility="no" />
 
 
     <androidx.appcompat.widget.AppCompatButton
@@ -104,7 +106,7 @@
         android:layout_marginBottom="16dp"
         android:background="@drawable/button_template"
         android:fontFamily="@font/open_sans"
-        android:text="SignUp"
+        android:text="@string/signup"
         android:textColor="@color/white"
         android:textStyle="bold"
         android:backgroundTint="@color/mid_blue"
@@ -125,7 +127,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.018"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="UseCompoundDrawables">
 
         <ImageView
             android:layout_width="45dp"
@@ -134,14 +137,16 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/baseline_arrow_back" />
+            app:srcCompat="@drawable/back_arrow_icon"
+            android:importantForAccessibility="no"
+            tools:ignore="VisualLintBounds" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:fontFamily="@font/open_sans"
-            android:text="Login"
+            android:text="@string/login"
             android:textColor="@color/white"
             android:textSize="20sp"
             android:textStyle="bold"
@@ -155,7 +160,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/open_sans"
-        android:text="Remember Me"
+        android:text="@string/remember_me"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
