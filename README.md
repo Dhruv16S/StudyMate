@@ -25,7 +25,7 @@ StudyMate caters to students and learners of all levels, providing them with a c
     - Used to implement the [BERT Large Language Model](https://www.tensorflow.org/lite/examples/bert_qa/overview) for the Question Answering System through Tensorflow Lite.
 - **[Filepicker](https://github.com/Atwa/filepicker)**
     - To select, read and upload files from a user's android device.
-- **[Ramtion](https://github.com/Ramotion/circle-menu-android)**
+- **[Ramotion](https://github.com/Ramotion/circle-menu-android)**
     - To develop the circular menu bar used in the application.
 - **Python and Jupyter Notebook**
     - To finetune the BERT Large Language Model.
@@ -38,4 +38,8 @@ git clone https://github.com/Dhruv16S/StudyMate.git
 
 After cloning if there are any issues, try setting a different JAVA_HOME path and perform a Gradle sync in Android Studio.
 
-Watch the application demo/tutorial here [StudyMate Application Demo](https://www.youtube.com/watch?v=-ud4fJUaPTk)
+https://github.com/Dhruv16S/StudyMate/assets/79364881/7ae7574d-c7cd-4eaf-b8eb-e1f7f625fb16
+
+
+
+
