@@ -33,9 +33,7 @@ StudyMate caters to students and learners of all levels, providing them with a c
 To clone the application run the following command
 
 `
-
 git clone https://github.com/Dhruv16S/StudyMate.git
-
 `
 
 After cloning if there are any issues, try setting a different JAVA_HOME path and perform a Gradle sync in Android Studio.
