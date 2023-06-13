@@ -79,19 +79,6 @@ class ShareActivity : AppCompatActivity() {
                         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
                         val currentDate = Date()
 
-                        //adding to created-notes
-                        database.createDocument(
-                            databaseId = "6479d563804822fc79bb",
-                            collectionId = "6479f9af8834a056c20d",
-                            documentId = ID.unique(),
-                            data = mapOf(
-                                "session-id" to senderUserId,
-                                "user-id" to receiverUserId,
-                                "note-name" to noteDoc.data["note-name"],
-                                "note-text" to noteDoc.data["note-text"],
-                                "date-created" to "Shared on: " + dateFormat.format(currentDate)
-                            )
-                        )
                         //adding to shared-notes
                         database.createDocument(
                             databaseId = "6479d563804822fc79bb",
@@ -105,6 +92,21 @@ class ShareActivity : AppCompatActivity() {
                                 "date-shared" to dateFormat.format(currentDate)
                             )
                         )
+
+                        //adding to created-notes
+                        database.createDocument(
+                            databaseId = "6479d563804822fc79bb",
+                            collectionId = "6479f9af8834a056c20d",
+                            documentId = ID.unique(),
+                            data = mapOf(
+                                "session-id" to senderUserId,
+                                "user-id" to receiverUserId,
+                                "note-name" to noteDoc.data["note-name"],
+                                "note-text" to noteDoc.data["note-text"],
+                                "date-created" to "Shared on: " + dateFormat.format(currentDate)
+                            )
+                        )
+
                         Toast.makeText(
                             this@ShareActivity,
                             "Note shared with ${receiverEmailAddress.text}",

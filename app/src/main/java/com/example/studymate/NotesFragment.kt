@@ -3,7 +3,6 @@ package com.example.studymate
 import android.Manifest
 import android.content.Context
 import android.content.SharedPreferences
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -26,11 +25,14 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import kotlinx.coroutines.DelicateCoroutinesApi
 
 
+@OptIn(DelicateCoroutinesApi::class)
 class NotesFragment : Fragment() {
     private lateinit var recyclerView : RecyclerView
     private lateinit var userId : String
@@ -41,9 +43,9 @@ class NotesFragment : Fragment() {
     private lateinit var adapter: CardAdapter
     private lateinit var preferences: SharedPreferences
 
-    private val CHANNEL_ID = "channel_tracking"
+    private val channelId = "channel_tracking"
     private val notificationID = 101
-    private var PERMISSION_REQUEST_CODE = 200
+    private var permissionRequestCode = 200
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val v : View = inflater.inflate(R.layout.fragment_notes, container, false)
@@ -66,11 +68,15 @@ class NotesFragment : Fragment() {
 
         val path = "documents"
         realtime.subscribe(path) {
-            val jsonObject = JSONObject(it.payload.toJson())
-            val receiver = jsonObject.getString("receiver")
-            Log.d("log", it.payload.toJson())
-            if(receiver == userId){
-                sendNotification(requireContext(), "StudyMate", "You received a note")
+            try{
+                val jsonObject = JSONObject(it.payload.toJson())
+                val receiver = jsonObject.getString("receiver")
+                Log.d("log", it.payload.toJson())
+                if (receiver == userId) {
+                    sendNotification(requireContext())
+                }
+            }catch (_ : Exception){
+
             }
         }
 
@@ -103,16 +109,15 @@ class NotesFragment : Fragment() {
     }
     private fun createNotificationChannel(){
         val name = "Notification Title"
-        val descriptionText = "Notification Description"
         val importance = NotificationManager.IMPORTANCE_DEFAULT
-        val channel = NotificationChannel(CHANNEL_ID, name, importance)
-            .apply { descriptionText }
+        val channel = NotificationChannel(channelId, name, importance)
+            .apply {  }
         val notificationManager : NotificationManager = context?.getSystemService(Context. NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(channel)
     }
 
-    private fun sendNotification(context: Context, title: String, desc: String) {
-        val channelId = CHANNEL_ID
+    private fun sendNotification(context: Context) {
+        val channelId = channelId
 
         // Create a notification intent (if needed)
         val notificationIntent = Intent(context, MainActivity::class.java)
@@ -126,8 +131,8 @@ class NotesFragment : Fragment() {
         // Build the notification
         val builder = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.share_icon)
-            .setContentTitle(title)
-            .setContentText(desc)
+            .setContentTitle("StudyMate")
+            .setContentText("You received a note")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingIntent) // Set the notification intent
 
@@ -138,11 +143,13 @@ class NotesFragment : Fragment() {
                 Manifest.permission.POST_NOTIFICATIONS
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                arrayOf(Manifest.permission.POST_NOTIFICATIONS),
-                PERMISSION_REQUEST_CODE
-            )
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                ActivityCompat.requestPermissions(
+                    requireActivity(),
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    permissionRequestCode
+                )
+            }
         }
         notificationManager.notify(notificationID, builder.build())
     }

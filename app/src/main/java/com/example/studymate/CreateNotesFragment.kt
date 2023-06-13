@@ -14,7 +14,6 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Typeface
 import android.os.Environment
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -80,7 +79,6 @@ class CreateNotesFragment : Fragment() {
     private val imageCaptureRequestCode = 200
     private val imageFileName = "captured_image.jpg"
     private lateinit var filePicker: FilePicker
-    private lateinit var tempFileId : String
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(

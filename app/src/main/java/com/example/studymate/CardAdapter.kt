@@ -2,30 +2,26 @@ package com.example.studymate
 
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
 import androidx.cardview.widget.CardView
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 
 class CardAdapter(
     noteNameList: ArrayList<String>,
     dateCreatedList: ArrayList<String>,
     documentIdList: ArrayList<String>,
-    userId : String,
-    frag : String,
+    private var userId: String,
+    private var frag: String,
     var context: Context
 ) : RecyclerView.Adapter<CardAdapter.CountryViewHolder>() {
     private var noteName = noteNameList
     private var dateCreated = dateCreatedList
     private var documentId = documentIdList
-    private var userId = userId
-    private var frag = frag
+
     class CountryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
         var noteName : TextView = itemView.findViewById(R.id.cardNoteName)
         var dateCreated : TextView = itemView.findViewById(R.id.cardDateCreated)
