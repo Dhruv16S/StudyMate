@@ -10,6 +10,8 @@ The Question Answering Systems feature utilizes a BERT (Bidirectional Encoder Re
 
 StudyMate caters to students and learners of all levels, providing them with a comprehensive platform to enhance their learning journey. By leveraging the capabilities of NLP, AI, and ML, StudyMate revolutionizes the way users engage with their study materials, making learning more efficient, interactive, and enjoyable.
 
+https://github.com/Dhruv16S/StudyMate/assets/79364881/7ae7574d-c7cd-4eaf-b8eb-e1f7f625fb16
+
 ## **Tech Stack**
 
 - **Appwrite Cloud**
@@ -38,7 +40,7 @@ git clone https://github.com/Dhruv16S/StudyMate.git
 
 After cloning if there are any issues, try setting a different JAVA_HOME path and perform a Gradle sync in Android Studio.
 
-https://github.com/Dhruv16S/StudyMate/assets/79364881/7ae7574d-c7cd-4eaf-b8eb-e1f7f625fb16
+*Download the application from the release section. Ensure that your android device or emulator grants all necessary permissions to the application.*
 
 
 
